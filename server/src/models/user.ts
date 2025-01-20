@@ -89,7 +89,6 @@ export function userFactory(sequelize: Sequelize) {
       sequelize,
       timestamps: true,
       updatedAt: false,
-      createdAt: true,
       tableName: "users",
     }
   );
