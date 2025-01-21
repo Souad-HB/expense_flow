@@ -76,3 +76,5 @@ Budget.belongsTo(Category, {
   foreignKey: "categoryId",
   as: "category",
 });
+
+export { User, Category, Account, Budget, Transaction };
