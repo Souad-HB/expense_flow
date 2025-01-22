@@ -23,22 +23,23 @@ export class Transaction extends Model<
   declare transactionDate: Date;
   declare isReccuring: boolean;
   declare frequency: frequency; // weekly/biweekly
-  declare notes: string;
+  declare notes?: string;
   declare userId: ForeignKey<User["id"]> | null;
   declare accountId: ForeignKey<Account["id"]> | null; // where is this transaction being pulled from
-  declare categoryId: ForeignKey<Category["id"]> | null;
+  declare categoryId?: ForeignKey<Category["id"]> | null;
 }
 
-export function transationFactory(sequelize: Sequelize) {
+export function transactionFactory(sequelize: Sequelize) {
   Transaction.init(
     {
       id: {
         type: DataTypes.INTEGER,
+        primaryKey: true,
         autoIncrement: true,
         allowNull: false,
       },
       transactionType: {
-        type: DataTypes.ENUM("income", "expense"),
+        type: DataTypes.ENUM("Income", "Expense"),
         allowNull: false,
       },
       amount: {

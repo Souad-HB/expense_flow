@@ -20,6 +20,7 @@ export function categoryFactory(sequelize: Sequelize) {
     {
       id: {
         type: DataTypes.INTEGER,
+        primaryKey: true,
         autoIncrement: true,
         allowNull: false,
         unique: true,

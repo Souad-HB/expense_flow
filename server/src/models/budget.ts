@@ -22,6 +22,9 @@ export class Budget extends Model<
   declare difference: number;
   declare userId: ForeignKey<User["id"]>;
   declare categoryId: ForeignKey<Category["id"]>;
+  async calculateDifference() {
+    this.difference = this.budgetedAmount - this.actualAmount;
+  }
 }
 
 export function budgetFactory(sequelize: Sequelize) {
@@ -29,6 +32,7 @@ export function budgetFactory(sequelize: Sequelize) {
     {
       id: {
         type: DataTypes.INTEGER,
+        primaryKey: true,
         allowNull: false,
         autoIncrement: true,
       },
@@ -64,7 +68,23 @@ export function budgetFactory(sequelize: Sequelize) {
         },
       },
     },
+
     {
+      hooks: {
+        beforeCreate: async (budget: Budget) => {
+          budget.calculateDifference();
+        },
+        beforeUpdate: async (updatedBudget: Budget) => {
+          if (
+            updatedBudget.changed("budgetedAmount") ||
+            updatedBudget.changed("actualAmount")
+          ) {
+            updatedBudget.calculateDifference();
+          } else {
+            console.log("No amounts have been updated");
+          }
+        },
+      },
       sequelize,
       timestamps: true,
       tableName: "budgets",

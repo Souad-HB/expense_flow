@@ -16,11 +16,11 @@ export class User extends Model<
   declare firstName: string;
   declare lastName: string;
   declare email: string;
-  declare isAdmin: boolean;
+  declare isAdmin?: boolean;
   declare password: string;
 
   // hash the password on creation
-  async setPassword(password: string) {
+  async setPassword(password: string): Promise<void> {
     const saltRounds = 10;
     this.password = await bcrypt.hash(password, saltRounds);
   }

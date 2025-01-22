@@ -7,7 +7,7 @@ import {
   InferCreationAttributes,
   Model,
 } from "sequelize";
-import { User } from "./user";
+import { User } from "./user.js";
 
 export class Account extends Model<
   InferAttributes<Account>,
@@ -24,6 +24,7 @@ export function accountFactory(sequelize: Sequelize) {
     {
       id: {
         type: DataTypes.INTEGER,
+        primaryKey: true,
         allowNull: false,
         autoIncrement: true,
         unique: true,

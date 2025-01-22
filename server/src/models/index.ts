@@ -3,7 +3,7 @@ import { userFactory } from "./user.js";
 import { categoryFactory } from "./category.js";
 import { accountFactory } from "./account.js";
 import { budgetFactory } from "./budget.js";
-import { transationFactory } from "./transaction.js";
+import { transactionFactory } from "./transaction.js";
 
 // initialize the models:
 
@@ -11,13 +11,12 @@ const User = userFactory(sequelize);
 const Category = categoryFactory(sequelize);
 const Account = accountFactory(sequelize);
 const Budget = budgetFactory(sequelize);
-const Transaction = transationFactory(sequelize);
+const Transaction = transactionFactory(sequelize);
 
 // ----------------- Account - User: OneToMany association --------------------------
 
 User.hasMany(Account, {
   foreignKey: "userId",
-  onDelete: "CASCADE",
   as: "accounts",
 });
 
@@ -30,6 +29,7 @@ Account.belongsTo(User, {
 
 User.hasMany(Transaction, {
   foreignKey: "userId",
+  as: "transactions",
 });
 
 Transaction.belongsTo(User, {
@@ -41,26 +41,29 @@ Transaction.belongsTo(User, {
 
 Category.hasMany(Transaction, {
   foreignKey: "categoryId",
+  as: "transactions",
 });
 Transaction.belongsTo(Category, {
   foreignKey: "categoryId",
-  as: "transaction",
+  as: "category",
 });
 
 // ----------------- Transaction - Account: OneToMany association --------------------------
 
 Account.hasMany(Transaction, {
   foreignKey: "accountId",
+  as: "transactions",
 });
 Transaction.belongsTo(Account, {
   foreignKey: "accountId",
-  as: "transaction",
+  as: "account",
 });
 
 // ----------------- Budget - User: OneToMany association --------------------------
 
 User.hasMany(Budget, {
   foreignKey: "userId",
+  as: "budgets",
 });
 Budget.belongsTo(User, {
   foreignKey: "userId",
@@ -71,6 +74,7 @@ Budget.belongsTo(User, {
 
 Category.hasMany(Budget, {
   foreignKey: "categoryId",
+  as: "budgets",
 });
 Budget.belongsTo(Category, {
   foreignKey: "categoryId",
