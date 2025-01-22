@@ -7,9 +7,9 @@ export const getUsersAccounts = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const userId = req.query.userId;
-  if (typeof userId !== "string") {
-    res.status(400).json({ message: "invalid user Id" });
+  const userId = req.params.id;
+  if (!userId) {
+    res.status(400).json({ message: "Invalid user ID" });
     return;
   }
   try {
@@ -19,6 +19,7 @@ export const getUsersAccounts = async (
     });
     if (!usersAccounts.length) {
       res.status(404).json({ message: "No accounts found" });
+      return;
     }
 
     // get the accounts names

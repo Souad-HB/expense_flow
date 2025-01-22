@@ -3,6 +3,8 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 
+import routes from "./routes/index.js";
+
 // const forceDatabaseRefresh = false;
 // recreate __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -17,6 +19,9 @@ app.use(express.static(buildPath));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// register the api routes
+app.use(routes);
 
 try {
   await sequelize.authenticate();
