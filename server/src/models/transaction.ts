@@ -21,7 +21,7 @@ export class Transaction extends Model<
   declare transactionType: transactionType;
   declare amount: number;
   declare transactionDate: Date;
-  declare isReccuring: boolean;
+  declare isRecurring: boolean;
   declare frequency: frequency; // weekly/biweekly
   declare notes?: string;
   declare userId: ForeignKey<User["id"]> | null;
@@ -50,7 +50,7 @@ export function transactionFactory(sequelize: Sequelize) {
         type: DataTypes.DATE,
         allowNull: true,
       },
-      isReccuring: {
+      isRecurring: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
       },
