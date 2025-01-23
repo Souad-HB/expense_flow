@@ -2,7 +2,8 @@ import {
   getAllRecurringTransactionsNext7Days,
   getAllRecurringTransactions,
   getAllRecurringTransactionsOfTheMonth,
-} from "../../controllers/transaction-controller";
+  createTransaction,
+} from "../../controllers/transaction-controller.js";
 
 import express from "express";
 
@@ -19,3 +20,9 @@ router.get("/recurring/next7days", getAllRecurringTransactionsNext7Days);
 // GET recurring transactions of the month
 // transactions/recurring/month
 router.get("/recurring/month", getAllRecurringTransactionsOfTheMonth);
+
+// POST create a new transaction
+// transactions/
+router.post("/", createTransaction);
+
+export { router as transactionRouter };

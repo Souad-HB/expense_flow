@@ -104,3 +104,51 @@ export const getAllRecurringTransactionsOfTheMonth = async (
     res.status(500).json({ message: error.message });
   }
 };
+
+// POST create a transaction
+export const createTransaction = async (req: Request, res: Response) => {
+  const {
+    transactionType,
+    amount,
+    transactionDate,
+    isRecurring,
+    frequency,
+    notes,
+    userId,
+    accountId,
+    categoryId,
+  } = req.body;
+
+  if (
+    !transactionType ||
+    !amount ||
+    !transactionDate ||
+    !isRecurring ||
+    !frequency ||
+    !userId ||
+    !accountId ||
+    !categoryId
+  ) {
+    res.status(400).json({ message: "some fields are empty or invalid " });
+  }
+  try {
+    const newTransaction = await Transaction.create({
+      transactionType,
+      amount,
+      transactionDate,
+      isRecurring,
+      frequency,
+      notes,
+      userId,
+      accountId,
+      categoryId,
+    });
+    await newTransaction.save(); // saves it to the db
+    res
+      .status(201)
+      .json({ message: "Transaction created successfully", newTransaction });
+  } catch (error: any) {
+    console.log("error creating transaction");
+    res.status(500).json({ message: error.message });
+  }
+};
