@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Category } from "../models";
+import { Category } from "../models/index.js";
 
 // get all categories
 export const getAllCategories = async (_req: Request, res: Response) => {
@@ -39,25 +39,18 @@ export const createCategory = async (req: Request, res: Response) => {
   }
 };
 
-// delete category
+// delete /categories/:id
 export const deleteCategory = async (req: Request, res: Response) => {
-  const { category } = req.params;
-
   try {
-    const deletedCategory = await Category.destroy({
-      where: {
-        category,
-      },
-    });
-    if (!deletedCategory) {
-      res
-        .status(404)
-        .json({
-          message:
-            "Category you are trying to delete does not exist in the database",
-        });
+    const category = await Category.findByPk(req.params.id);
+    if (!category) {
+      res.status(404).json({
+        message:
+          "Category you are trying to delete does not exist in the database",
+      });
       return;
     }
+    await category.destroy();
     res.status(200).json({ message: "Category deleted successfully" });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
