@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { User } from "../models/index.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import express from "express";
+import { Router } from "express";
 
 // login function
 export const login = async (req: Request, res: Response): Promise<any> => {
@@ -40,6 +40,8 @@ export const login = async (req: Request, res: Response): Promise<any> => {
 };
 
 // router
-const router = express.Router();
+const router = Router();
 // route
 router.post("/login", login);
+
+export default router;

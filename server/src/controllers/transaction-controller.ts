@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Transaction } from "../models/index.js";
+import { Transaction, User } from "../models/index.js";
 
 // getAllRecurringTransactions
 export const getAllRecurringTransactions = async (
@@ -7,8 +7,11 @@ export const getAllRecurringTransactions = async (
   res: Response
 ) => {
   // validate userId
-  const userId = req.params.id;
-  if (!userId) {
+  const userId = req.user?.id;
+  console.log(userId)
+  const user = await User.findByPk(userId);
+  console.log(user)
+  if (!user) {
     res.status(404).json({ message: "User not found" });
     return;
   }
@@ -16,7 +19,7 @@ export const getAllRecurringTransactions = async (
     // get the transactions for a specific user
     const transactions = await Transaction.findAll({
       where: {
-        userId: userId,
+        userId,
         isRecurring: true,
       },
     });
@@ -39,7 +42,7 @@ export const getAllRecurringTransactionsNext7Days = async (
   req: Request,
   res: Response
 ) => {
-  const userId = req.params.id;
+  const userId = req.user?.id;
   const today = new Date();
   const weekFromNow = today.setDate(today.getDate() + 1 * 7); // add 7 days (a week from the current day)
   if (!userId) {
@@ -49,7 +52,7 @@ export const getAllRecurringTransactionsNext7Days = async (
   try {
     const transactionsNext7Days = await Transaction.findAll({
       where: {
-        userId: userId,
+        userId,
         isRecurring: true,
         transactionDate: { $between: [today, weekFromNow] },
       },
@@ -75,7 +78,7 @@ export const getAllRecurringTransactionsOfTheMonth = async (
   req: Request,
   res: Response
 ) => {
-  const userId = req.params.id;
+  const userId = req.user?.id;
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
   const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
