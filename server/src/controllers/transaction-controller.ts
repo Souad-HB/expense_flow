@@ -2,6 +2,35 @@ import { Request, Response } from "express";
 import { Transaction, User } from "../models/index.js";
 import { Op } from "sequelize";
 
+// getAllTransactions
+export const getAllTransactions = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(404).json({ message: "user not found" });
+      return;
+    }
+    const transactions = await Transaction.findAll({
+      where: { userId },
+      include: {
+        model: User,
+        as: "user",
+      },
+    });
+    if (!transactions.length) {
+      res.status(404).json({ message: "No transactions found for that user" });
+      return;
+    }
+    res.status(200).json({
+      message: "Transactions retrieved successfully",
+      Transaction: transactions,
+    });
+  } catch (error: any) {
+    console.log("error fetching transactions");
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // getAllRecurringTransactions
 export const getAllRecurringTransactions = async (
   req: Request,
@@ -49,7 +78,7 @@ export const getAllRecurringTransactionsNext7Days = async (
 ) => {
   const userId = req.user?.id;
   const today = new Date();
-  const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000) ; // add 7 days (a week from the current day)
+  const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000); // add 7 days (a week from the current day)
   if (!userId) {
     res.status(404).json({ message: "Invalid user" });
     return;
