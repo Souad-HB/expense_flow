@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { Transaction, User } from "../models/index.js";
+import { Op } from "sequelize";
 
 // getAllRecurringTransactions
 export const getAllRecurringTransactions = async (
@@ -8,9 +9,9 @@ export const getAllRecurringTransactions = async (
 ) => {
   // validate userId
   const userId = req.user?.id;
-  console.log(userId)
+  console.log(userId);
   const user = await User.findByPk(userId);
-  console.log(user)
+  console.log(user);
   if (!user) {
     res.status(404).json({ message: "User not found" });
     return;
@@ -21,6 +22,10 @@ export const getAllRecurringTransactions = async (
       where: {
         userId,
         isRecurring: true,
+      },
+      include: {
+        model: User,
+        as: "user",
       },
     });
     if (!transactions.length) {
@@ -44,7 +49,7 @@ export const getAllRecurringTransactionsNext7Days = async (
 ) => {
   const userId = req.user?.id;
   const today = new Date();
-  const weekFromNow = today.setDate(today.getDate() + 1 * 7); // add 7 days (a week from the current day)
+  const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000) ; // add 7 days (a week from the current day)
   if (!userId) {
     res.status(404).json({ message: "Invalid user" });
     return;
@@ -54,7 +59,7 @@ export const getAllRecurringTransactionsNext7Days = async (
       where: {
         userId,
         isRecurring: true,
-        transactionDate: { $between: [today, weekFromNow] },
+        transactionDate: { [Op.between]: [today, weekFromNow] },
       },
     });
     if (!transactionsNext7Days.length) {
@@ -122,19 +127,40 @@ export const createTransaction = async (req: Request, res: Response) => {
     categoryId,
   } = req.body;
 
-  if (
-    !transactionType ||
-    !amount ||
-    !transactionDate ||
-    !isRecurring ||
-    !frequency ||
-    !userId ||
-    !accountId ||
-    !categoryId
-  ) {
-    res.status(400).json({ message: "some fields are empty or invalid " });
-  }
   try {
+    if (!transactionType || !["Income", "Expense"].includes(transactionType)) {
+      res.status(400).json({ message: "Invalid transaction type" });
+      return;
+    }
+
+    if (amount === undefined || amount <= 0 || typeof amount !== "number") {
+      res.status(400).json({ message: "Amount must be a positive number" });
+      return;
+    }
+
+    if (!transactionDate || isNaN(new Date(transactionDate).getTime())) {
+      res.status(400).json({ message: "Invalid transaction date" });
+      return;
+    }
+
+    if (isRecurring === undefined || typeof isRecurring !== "boolean") {
+      res.status(400).json({ message: "isRecurring must be true or false" });
+    }
+
+    if (!userId || typeof userId !== "number") {
+      res.status(400).json({ message: "Invalid or missing userId" });
+      return;
+    }
+
+    if (!accountId || typeof accountId !== "number") {
+      res.status(400).json({ message: "Invalid or missing accountId" });
+      return;
+    }
+
+    if (!categoryId || typeof categoryId !== "number") {
+      res.status(400).json({ message: "Invalid or missing categoryId" });
+      return;
+    }
     const newTransaction = await Transaction.create({
       transactionType,
       amount,
@@ -146,10 +172,11 @@ export const createTransaction = async (req: Request, res: Response) => {
       accountId,
       categoryId,
     });
-    await newTransaction.save(); // saves it to the db
-    res
-      .status(201)
-      .json({ message: "Transaction created successfully", newTransaction });
+
+    res.status(201).json({
+      message: "Transaction created successfully",
+      transaction: newTransaction,
+    });
   } catch (error: any) {
     console.log("error creating transaction");
     res.status(500).json({ message: error.message });

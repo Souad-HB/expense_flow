@@ -29,7 +29,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
     }
     // when all is good, give out a token with the user info and the secretkey
     const token = jwt.sign(
-      { email: user.email, password: user.password },
+      { email: user.email, password: user.password, id: user.id },
       secretKey,
       { expiresIn: "1h" }
     );
