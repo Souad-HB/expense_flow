@@ -19,7 +19,7 @@ export class Budget extends Model<
   declare endDate: Date;
   declare budgetedAmount: number;
   declare actualAmount: number;
-  declare difference: number;
+  declare difference?: number;
   declare userId: ForeignKey<User["id"]>;
   declare categoryId: ForeignKey<Category["id"]>;
   async calculateDifference() {
