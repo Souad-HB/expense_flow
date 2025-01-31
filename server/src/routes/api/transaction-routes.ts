@@ -3,12 +3,15 @@ import {
   getAllRecurringTransactions,
   getAllRecurringTransactionsOfTheMonth,
   createTransaction,
+  getAllTransactions,
 } from "../../controllers/transaction-controller.js";
 
 import express from "express";
 
 const router = express.Router();
-
+// GET all transactions
+// /transactions
+router.get("/", getAllTransactions);
 // GET all recurring transactions
 // /transactions/recurring
 router.get("/recurring", getAllRecurringTransactions);

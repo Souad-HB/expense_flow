@@ -22,7 +22,7 @@ export class Transaction extends Model<
   declare amount: number;
   declare transactionDate: Date;
   declare isRecurring: boolean;
-  declare frequency: frequency; // weekly/biweekly
+  declare frequency?: frequency; // weekly/biweekly
   declare notes?: string;
   declare userId: ForeignKey<User["id"]> | null;
   declare accountId: ForeignKey<Account["id"]> | null; // where is this transaction being pulled from
