@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Budget, User, Category } from "../models/index.js";
 
+
 // GET /budgets
 export const getAllBudgets = async (req: Request, res: Response) => {
   const userId = req.user?.id;
@@ -175,5 +176,33 @@ export const updateBudget = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({ message: error.message });
     return;
+  }
+};
+
+// DELETE /budgets/:id
+export const deleteBudget = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    const { id } = req.params;
+    const user = await User.findByPk(userId);
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    const budget = await Budget.findAll({
+      where: {
+        userId,
+        id,
+      },
+    });
+    if (!budget) {
+      res.status(404).json({ message: "Budget not found." });
+    }
+    await Budget.destroy({ where: { id, userId } });
+    res
+      .status(200)
+      .json({ message: "Budget deleted successfully", budget: budget });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
   }
 };
