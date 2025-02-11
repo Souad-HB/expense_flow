@@ -16,11 +16,14 @@
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.8",
     "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.13.1",
-    "sequelize": "^6.37.5"
+    "plaid": "^31.0.0",
+    "sequelize": "^6.37.5",
+    "util": "^0.12.5"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
