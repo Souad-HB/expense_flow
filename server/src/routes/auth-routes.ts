@@ -43,7 +43,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
 // signup function
 export const signup = async (req: Request, res: Response): Promise<any> => {
   try {
-    // extract username, password, and other required fields from req.body
+    // extract firstname, lastname, email, password from req.body
     const { firstName, lastName, email, password } = req.body;
     // check if a user with the given email already exists in the database
     const existingUser = await User.findOne({ where: { email } });
@@ -61,7 +61,7 @@ export const signup = async (req: Request, res: Response): Promise<any> => {
       password,
     });
 
-    // generate a JWT token for the user for auto-login after signup -- for greg's sake
+    // generate a JWT token for the user for auto-login after signup 
     const secretKey = process.env.JWT_SECRET_KEY || "";
     if (!secretKey) {
       return res.status(500).json({ message: "JWT Secret key not configured" });

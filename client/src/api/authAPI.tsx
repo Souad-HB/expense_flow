@@ -2,7 +2,7 @@ import { SignUpFormState } from "../interfaces/SignUpForm.js";
 
 const signup = async (newUser: SignUpFormState) => {
   try {
-    const response = await fetch("/api/auth/signup", {
+    const response = await fetch("/auth/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
