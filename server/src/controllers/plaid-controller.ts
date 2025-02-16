@@ -23,7 +23,7 @@ let ACCESS_TOKEN = null;
 export const createLinkToken = async (req: Request, res: Response) => {
   const userId = req.user?.id?.toString() || "default_user_id";
   if (!userId) {
-    res.status(404).json({ message: "user not found"})
+    res.status(404).json({ message: "user not found" });
   }
   const configs = {
     user: {
@@ -34,13 +34,13 @@ export const createLinkToken = async (req: Request, res: Response) => {
     country_codes: PLAID_COUNTRY_CODES,
     language: "en",
   };
-  console.log(configs)
+  console.log(configs);
   try {
     // call plaid API to create link token
     const createTokenResponse = await plaidClient.linkTokenCreate(configs);
     // print the response
     prettyPrintResponse(createTokenResponse);
-    res.json(createTokenResponse.data);
+    res.json(createTokenResponse.data.link_token);
   } catch (error) {
     console.error("Error creating link token", error);
     res.status(500).json({ message: "Failed to create link token" });

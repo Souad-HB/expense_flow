@@ -18,6 +18,7 @@
   "license": "ISC",
   "dependencies": {
     "concurrently": "^9.1.2",
+    "react-plaid-link": "^3.6.1",
     "typescript": "^5.7.3"
   }
 }

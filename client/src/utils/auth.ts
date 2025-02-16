@@ -2,7 +2,11 @@ import { JwtPayload as DefaultJwtPayload, jwtDecode } from "jwt-decode";
 
 // Extend the default JwtPayload to include custom fields like username and id
 interface CustomJwtPayload extends DefaultJwtPayload {
-  username: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+  isAdmin: false;
+  email: string;
   id: number;
 }
 

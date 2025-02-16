@@ -1,5 +1,8 @@
 // import Auth from "../utils/auth.js";
 
+
+
+
 export const fetchLinkToken = async () => {
   try {
     const response = await fetch("/api/plaid/create-link-token", {
@@ -12,6 +15,7 @@ export const fetchLinkToken = async () => {
       throw new Error("Invalid API Response");
     }
     const data = await response.json();
+    
     return data;
   } catch (error) {
     console.log("error retrieving data", error);

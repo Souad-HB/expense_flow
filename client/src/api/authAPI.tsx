@@ -1,3 +1,4 @@
+import { LoginFormData } from "../interfaces/LoginForm.js";
 import { SignUpFormState } from "../interfaces/SignUpForm.js";
 
 const signup = async (newUser: SignUpFormState) => {
@@ -22,4 +23,23 @@ const signup = async (newUser: SignUpFormState) => {
   }
 };
 
-export { signup };
+const login = async (user: LoginFormData) => {
+  try {
+    const response = await fetch("/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(user),
+    });
+    const data = await response.json();
+    if (!response) {
+      throw new Error("Error logging in.");
+    }
+    return data;
+  } catch (error) {
+    console.error("Error logging in", error);
+    return Promise.reject("Could not Sign up");
+  }
+};
+export { signup, login };
