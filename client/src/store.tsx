@@ -43,23 +43,33 @@ export const useUserSession = create(
 );
 
 type AuthStore = {
-  isLoggedIn: boolean;
-  login: () => void;
+  isAuthenticated: boolean;
+  token: string | null;
+  login: (token: string) => void;
   logout: () => void;
 };
+
 export const useAuthStore = create(
   persist<AuthStore>(
     (set) => ({
       // define initial logged in state
-      isLoggedIn: false,
+      token: AuthService.getToken() || null,
 
-      login: () => {
-        const token = AuthService.getToken();
+      login: (token) => {
+        console.log("logging in with token:", token);
         AuthService.login(token);
-        set({ isLoggedIn: true });
+        set({ token: token, isAuthenticated: true });
+        console.log(
+          "updated state from login in store is",
+          useAuthStore.getState()
+        );
       },
+
+      isAuthenticated: AuthService.loggedIn(),
+
       logout: () => {
         AuthService.logout();
+        set({ isAuthenticated: false });
       },
     }),
     { name: "AuthStore-state" }
