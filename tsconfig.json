@@ -33,5 +33,5 @@
     "outDir": "dist" /* Specify an output folder for all emitted files. */
     // "noEmitOnError": true /* Disable emitting files if any type checking errors are reported. */
   },
-  "exclude": ["dist", "node_modules"]
+  "exclude": ["./dist/**/*", "node_modules"]
 }
