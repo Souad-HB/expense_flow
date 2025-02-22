@@ -14,8 +14,12 @@ export class Account extends Model<
   InferCreationAttributes<Account>
 > {
   declare id: CreationOptional<number>;
+  declare plaidAccountId: string;
   declare accountName: string;
-  declare balance: number;
+  declare balanceCurrent: number | null;
+  declare balanceAvailable: number | null;
+  declare type: string | null;
+  declare subtype: string | null;
   declare userId: ForeignKey<User["id"]> | null;
 }
 
@@ -25,16 +29,35 @@ export function accountFactory(sequelize: Sequelize) {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        allowNull: false,
         autoIncrement: true,
+        allowNull: false,
+        unique: true,
+      },
+      // this is the id coming from the plaid api for the account
+      plaidAccountId: {
+        type: DataTypes.STRING,
+        allowNull: true,
         unique: true,
       },
       accountName: {
         type: DataTypes.STRING,
-        unique: true,
+        unique: false,
       },
-      balance: {
+
+      balanceCurrent: {
         type: DataTypes.FLOAT,
+        allowNull: true,
+      },
+      balanceAvailable: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
+      },
+      type: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      subtype: {
+        type: DataTypes.STRING,
         allowNull: true,
       },
       userId: {
@@ -49,7 +72,6 @@ export function accountFactory(sequelize: Sequelize) {
     {
       sequelize,
       timestamps: true,
-      updatedAt: false,
       tableName: "accounts",
     }
   );

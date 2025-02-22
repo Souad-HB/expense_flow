@@ -9,7 +9,7 @@ export const seedTransactions = async () => {
       isRecurring: true,
       frequency: "Monthly",
       userId: 1,
-      accountId: 1,
+      accountId: 2,
       categoryId: 1,
     },
     {
@@ -20,6 +20,7 @@ export const seedTransactions = async () => {
       frequency: "Bi-Weekly",
       userId: 1,
       accountId: 1,
+      categoryId: 1,
     },
   ]);
 };

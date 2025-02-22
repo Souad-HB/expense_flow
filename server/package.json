@@ -7,7 +7,15 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "start": "npm run build && node dist/server.js --ignore client",
-    "seed": "node dist/seeds/index.js"
+    "seed": "node dist/seeds/index.js",
+    "dev": "npx nodemon"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "src"
+    ],
+    "ext": "ts,json,js",
+    "exec": "npx tsc && node dist/server.js"
   },
   "keywords": [],
   "author": "",
@@ -16,11 +24,15 @@
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.8",
     "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
+    "nodemon": "^3.1.9",
     "pg": "^8.13.1",
-    "sequelize": "^6.37.5"
+    "plaid": "^31.0.0",
+    "sequelize": "^6.37.5",
+    "util": "^0.12.5"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

@@ -25,8 +25,8 @@ export class Transaction extends Model<
   declare frequency?: frequency; // weekly/biweekly
   declare notes?: string;
   declare userId: ForeignKey<User["id"]> | null;
-  declare accountId: ForeignKey<Account["id"]> | null; // where is this transaction being pulled from
-  declare categoryId?: ForeignKey<Category["id"]> | null;
+  declare accountId: ForeignKey<Account["id"]> ; // where is this transaction being pulled from
+  declare categoryId?: ForeignKey<Category["id"]>;
 }
 
 export function transactionFactory(sequelize: Sequelize) {
