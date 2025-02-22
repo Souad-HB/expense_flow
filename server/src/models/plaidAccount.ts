@@ -50,7 +50,7 @@ export function PlaidAccountFactory(sequelize: Sequelize) {
       sequelize,
       timestamps: true,
       updatedAt: false,
-      tableName: "plaid accounts",
+      tableName: "plaid_accounts",
     }
   );
   return PlaidAccount;

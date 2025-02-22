@@ -18,6 +18,7 @@ const seedAll = async () => {
 
     await seedCategories();
     console.log("🌱 categories seeded");
+    
     await seedBudgets();
     console.log("🌱 Budgets seeded");
 

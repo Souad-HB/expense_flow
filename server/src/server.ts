@@ -52,11 +52,12 @@ app.use(routes);
 
 try {
   await sequelize.authenticate();
-
-  console.log("🟢 Connected to the expenses_db");
-  app.listen(PORT, () => {
-    console.log("🎉 Server is listening on port 3001");
-  });
+  
+    console.log("🟢 Connected to the expenses_db");
+    app.listen(PORT, () => {
+      console.log(`🎉 Server is listening on port ${PORT}`);
+    });
+  // });
 } catch (error) {
   console.error("🔴 Unable to connect to the database:", error);
 }

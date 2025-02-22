@@ -81,8 +81,8 @@ export const signup = async (req: Request, res: Response): Promise<any> => {
       },
       token,
     });
-  } catch (error) {
-    return res.status(500).json("Error creating new user");
+  } catch (error: any) {
+    return res.status(500).json(error);
   }
 };
 

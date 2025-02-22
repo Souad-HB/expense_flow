@@ -4,7 +4,15 @@ import { Account, User } from "../models/index.js";
 // create an account
 // POST /accounts
 export const createAccount = async (req: Request, res: Response) => {
-  const { userId, accountName, balance } = req.body;
+  const {
+    userId,
+    plaidAccountId,
+    accountName,
+    balanceCurrent,
+    balanceAvailable,
+    type,
+    subtype,
+  } = req.body;
   try {
     const user = await User.findByPk(userId);
     if (!user) {
@@ -12,8 +20,12 @@ export const createAccount = async (req: Request, res: Response) => {
     } else {
       const account = await Account.create({
         userId,
+        plaidAccountId,
         accountName,
-        balance,
+        balanceCurrent,
+        balanceAvailable,
+        type,
+        subtype,
       });
       await account.save();
       res.status(200).json({ message: "Account created successfully" });
@@ -27,7 +39,7 @@ export const createAccount = async (req: Request, res: Response) => {
 // update account balance
 // PUT /accounts/:id/balance
 export const updateAccountBalance = async (req: Request, res: Response) => {
-  const userId = req.params.id;
+  const userId = req.user?.id;
   const { balance } = req.body;
   if (!balance || typeof balance !== "number") {
     res.status(400).json({ message: "invalid or missing balance value" });
@@ -42,10 +54,13 @@ export const updateAccountBalance = async (req: Request, res: Response) => {
       if (!account) {
         res.status(404).json("No account associated with that user");
       } else {
-        const newAccountBalance = await account.update({ balance });
+        const newAccountBalance = await account.update({
+          balanceCurrent: balance,
+          balanceAvailable: balance,
+        });
         res.status(200).json({
           message: "balance updated successfully",
-          balance: newAccountBalance.balance,
+          balance: newAccountBalance.balanceCurrent,
         });
       }
     }

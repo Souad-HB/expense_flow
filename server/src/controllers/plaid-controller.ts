@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { plaidClient } from "../server.js";
 import { Products, CountryCode } from "plaid";
 import { prettyPrintResponse } from "../server.js";
-import { PlaidAccount } from "../models/plaidAccount.js";
+import { PlaidAccount, Account } from "../models/index.js";
 
 // PLAID_PRODUCTS is a comma-separated list of products to use when initializing
 // Link. Note that this list must contain 'assets' in order for the app to be
@@ -55,8 +55,13 @@ export const exchangePublicToken = async (req: Request, res: Response) => {
     const publicTokenResponse = await plaidClient.itemPublicTokenExchange(
       PUBLIC_TOKEN
     );
-    prettyPrintResponse(publicTokenResponse);
+    // prettyPrintResponse(publicTokenResponse);
+    console.log(
+      "public response data from exchange api is:",
+      publicTokenResponse.data
+    );
     ACCESS_TOKEN = publicTokenResponse.data.access_token;
+    console.log(ACCESS_TOKEN);
     ITEM_ID = publicTokenResponse.data.item_id;
 
     // Save or update to the database
@@ -72,9 +77,78 @@ export const exchangePublicToken = async (req: Request, res: Response) => {
     if (!created) {
       await plaidAccount.update({ accessToken: ACCESS_TOKEN, itemId: ITEM_ID });
     }
-    res.status(200).json({ message: "Access token has been saved" });
+    res.status(200).json({
+      message: "Access token has been saved",
+      data: publicTokenResponse.data,
+    });
   } catch (error: any) {
     console.error("Error exchanging public token", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// get the account information and update the db
+export const getAccountBalance = async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+  if (!userId) {
+    console.log("user not found, cannot generate account balance");
+    res.status(404).json("User not found");
+  }
+  try {
+    console.log("user Id that is trying to log their account is number: ",userId);
+    const accessToken = await PlaidAccount.findOne({
+      where: {
+        userId: userId,
+      },
+    });
+    if (!accessToken) {
+      res.status(404).json({ message: "Access token not found" });
+      return;
+    }
+    const response = await plaidClient.accountsBalanceGet({
+      access_token: accessToken.accessToken,
+    });
+    const plaidAccounts = response.data.accounts;
+    console.log("plaidAccounts from the api response are: ",plaidAccounts)
+    // iterate through each account
+    for (const account of plaidAccounts) {
+      //  either update existing data or insert new data into the table based on accountId
+      const possibleAccount = await Account.findOne({
+      where: {
+        plaidAccountId: account.account_id,
+      },
+      });
+      console.log("possible account is: ", possibleAccount)
+      // if the account already exists just update the balance
+      if (possibleAccount) {
+      await Account.update(
+        {
+        balanceCurrent: account.balances.current,
+        balanceAvailable: account.balances.available,
+        },
+        {
+        where: {
+          plaidAccountId: possibleAccount.id,
+        },
+        }
+      );
+      }
+      // if the account doesn't exist then create it in the db
+      else {
+      await Account.create({
+        plaidAccountId: account.account_id,
+        accountName: account.name,
+        balanceCurrent: account.balances.current,
+        balanceAvailable: account.balances.available,
+        type: account.type,
+        subtype: account.subtype,
+        userId: req.user?.id,
+      });
+      }
+    }
+    prettyPrintResponse(response);
+    res.status(200).json(response.data);
+  } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };

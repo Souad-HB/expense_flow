@@ -4,10 +4,12 @@ import { categoryFactory } from "./category.js";
 import { accountFactory } from "./account.js";
 import { budgetFactory } from "./budget.js";
 import { transactionFactory } from "./transaction.js";
+import { PlaidAccountFactory } from "./plaidAccount.js";
 
 // initialize the models:
 
 const User = userFactory(sequelize);
+const PlaidAccount = PlaidAccountFactory(sequelize);
 const Category = categoryFactory(sequelize);
 const Account = accountFactory(sequelize);
 const Budget = budgetFactory(sequelize);
@@ -81,4 +83,14 @@ Budget.belongsTo(Category, {
   as: "category",
 });
 
-export { User, Category, Account, Budget, Transaction };
+// ----------------- PlaidAccount - User: OneToOne association --------------------------
+User.hasOne(PlaidAccount, {
+  foreignKey: "userId",
+  as: "plaidAccount",
+});
+PlaidAccount.belongsTo(User, {
+  foreignKey: "userId",
+  as: "user",
+});
+
+export { User, Category, Account, Budget, Transaction, PlaidAccount };
