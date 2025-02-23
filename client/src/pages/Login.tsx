@@ -92,6 +92,7 @@ export const Login = () => {
               <Button
                 type="submit"
                 variant="contained"
+                className=" w-full max-w-md"
                 sx={{
                   borderRadius: 50,
                   backgroundColor: "#9a3c38",
@@ -108,8 +109,7 @@ export const Login = () => {
             <span className="text-gray-700">New to Expense Flow?</span>
             <Button
               onClick={() => navigate("/signup")}
-              className="underline pl-1 cursor-pointer"
-              sx={{ color: "#9a3c38" }}
+              sx={{ color: "#9a3c38", textDecoration: "underline" }}
             >
               Sign Up
             </Button>
