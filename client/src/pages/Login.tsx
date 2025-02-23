@@ -27,7 +27,7 @@ export const Login = () => {
       };
       await login(user);
       console.log("User logged in successfully");
-      navigate("/dashboard");
+      navigate("/onboard");
     } catch (error) {
       console.error("Login failed", error);
       setError("Error logging in, please try again.");

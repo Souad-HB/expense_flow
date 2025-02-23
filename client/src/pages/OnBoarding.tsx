@@ -10,7 +10,7 @@ import {
 import { exchangePublicForAccessToken, fetchLinkToken } from "../api/plaidAPI";
 import { useEffect, useState } from "react";
 
-export const Dashboard = () => {
+export const OnBoarding = () => {
   // create a state variable token to store the fetched token
   const [token, setToken] = useState<string | null>(null);
   // fetch the token when the component mounts
@@ -58,7 +58,7 @@ export const Dashboard = () => {
       disabled={!ready}
 
     >
-      Connect a bank account
+      Link your accounts
     </button>
   );
 };
