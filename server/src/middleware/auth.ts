@@ -11,6 +11,10 @@ export const authenticateToken = async (
   res: Response,
   next: NextFunction
 ) => {
+  // eliminating the institutions/get route from auth since it's just pulling data for the onboarding page
+  if (req.path === "/plaid/institutions/get") {
+    return next();
+  }
   const authHeader = req.headers.authorization;
 
   if (authHeader) {

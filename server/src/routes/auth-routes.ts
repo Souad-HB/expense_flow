@@ -28,6 +28,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
     if (!secretKey) {
       res.status(500).json({ message: "secret key is not configured" });
     }
+    
     // when all is good, give out a token with the user info and the secretkey
     const token = jwt.sign(
       { email: user.email, password: user.password, id: user.id },
