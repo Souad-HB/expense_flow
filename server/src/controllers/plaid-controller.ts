@@ -95,7 +95,10 @@ export const getAccountBalance = async (req: Request, res: Response) => {
     res.status(404).json("User not found");
   }
   try {
-    console.log("user Id that is trying to log their account is number: ",userId);
+    console.log(
+      "user Id that is trying to log their account is number: ",
+      userId
+    );
     const accessToken = await PlaidAccount.findOne({
       where: {
         userId: userId,
@@ -109,46 +112,73 @@ export const getAccountBalance = async (req: Request, res: Response) => {
       access_token: accessToken.accessToken,
     });
     const plaidAccounts = response.data.accounts;
-    console.log("plaidAccounts from the api response are: ",plaidAccounts)
+    console.log("plaidAccounts from the api response are: ", plaidAccounts);
     // iterate through each account
     for (const account of plaidAccounts) {
       //  either update existing data or insert new data into the table based on accountId
       const possibleAccount = await Account.findOne({
-      where: {
-        plaidAccountId: account.account_id,
-      },
+        where: {
+          plaidAccountId: account.account_id,
+        },
       });
-      console.log("possible account is: ", possibleAccount)
+      console.log("possible account is: ", possibleAccount);
       // if the account already exists just update the balance
       if (possibleAccount) {
-      await Account.update(
-        {
-        balanceCurrent: account.balances.current,
-        balanceAvailable: account.balances.available,
-        },
-        {
-        where: {
-          plaidAccountId: possibleAccount.id,
-        },
-        }
-      );
+        await Account.update(
+          {
+            balanceCurrent: account.balances.current,
+            balanceAvailable: account.balances.available,
+          },
+          {
+            where: {
+              plaidAccountId: possibleAccount.id,
+            },
+          }
+        );
       }
       // if the account doesn't exist then create it in the db
       else {
-      await Account.create({
-        plaidAccountId: account.account_id,
-        accountName: account.name,
-        balanceCurrent: account.balances.current,
-        balanceAvailable: account.balances.available,
-        type: account.type,
-        subtype: account.subtype,
-        userId: req.user?.id,
-      });
+        await Account.create({
+          plaidAccountId: account.account_id,
+          accountName: account.name,
+          balanceCurrent: account.balances.current,
+          balanceAvailable: account.balances.available,
+          type: account.type,
+          subtype: account.subtype,
+          userId: req.user?.id,
+        });
       }
     }
     prettyPrintResponse(response);
     res.status(200).json(response.data);
   } catch (error: any) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+// get bank logos to be rendered in the frontend on the onboarding page
+export const getInstitutionsLogos = async (
+  _req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const response = await plaidClient.institutionsGet({
+      client_id: process.env.PLAID_CLIENT_ID || "",
+      secret: process.env.PLAID_SECRET || "",
+      count: 5,
+      offset: 0,
+      country_codes: [CountryCode.Us],
+      options: { include_optional_metadata: true },
+    });
+    const institutions = response.data;
+    if (institutions) {
+      return res.status(200).json(institutions);
+    } else {
+      console.log("No institutions were retrieved");
+    }
+  } catch (error) {
+    console.log("Logos cannot be retrieved from the server");
+    res.status(500).json(error);
+    return; 
   }
 };

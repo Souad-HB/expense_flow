@@ -67,3 +67,26 @@ export const fetchAccountBalance = async () => {
     return;
   }
 };
+
+// get institutions logos for onboarding page
+export const fetchLogos = async () => {
+  try {
+    const response = await fetch("api/plaid/institutions/get", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Could not fetch logos from the server");
+    }
+    const data = await response.json();
+    
+    return data;
+    
+  } catch (error) {
+    console.log("Error retrieving data", error);
+    throw error;
+  }
+};
+
