@@ -13,6 +13,7 @@ export const Login = () => {
   const navigate = useNavigate();
   // handle input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e)
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };

@@ -165,20 +165,20 @@ export const getInstitutionsLogos = async (
     const response = await plaidClient.institutionsGet({
       client_id: process.env.PLAID_CLIENT_ID || "",
       secret: process.env.PLAID_SECRET || "",
-      count: 500,
+      count: 5,
       offset: 0,
       country_codes: [CountryCode.Us],
       options: { include_optional_metadata: true },
     });
     const institutions = response.data;
     if (institutions) {
-      res.status(200).json({ institutions });
+      return res.status(200).json(institutions);
     } else {
       console.log("No institutions were retrieved");
     }
   } catch (error) {
-    console.log("Logos cannot be retrieved from the PLAID API");
+    console.log("Logos cannot be retrieved from the server");
     res.status(500).json(error);
-    return;
+    return; 
   }
 };
