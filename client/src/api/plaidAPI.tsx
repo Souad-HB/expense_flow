@@ -1,5 +1,6 @@
 import Auth from "../utils/auth.js";
-
+import { useAuthStore } from "../store.js";
+import { useNavigate } from "react-router-dom";
 // FETCH LINK TOKEN GENRATED FROM THE BACKEND
 export const fetchLinkToken = async () => {
   try {
@@ -81,12 +82,10 @@ export const fetchLogos = async () => {
       throw new Error("Could not fetch logos from the server");
     }
     const data = await response.json();
-    
+
     return data;
-    
   } catch (error) {
     console.log("Error retrieving data", error);
     throw error;
   }
 };
-

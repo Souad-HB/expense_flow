@@ -9,6 +9,7 @@ import { Signup } from "./pages/Signup.tsx";
 import { ProtectedRoute } from "./utils/protectedRoute.tsx";
 import { OnBoarding } from "./pages/OnBoarding.tsx";
 import { Landing } from "./pages/Landing.tsx";
+import { Dashboard } from "./pages/Dashboard.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -26,6 +27,14 @@ createRoot(document.getElementById("root")!).render(
             element={
               <ProtectedRoute>
                 <OnBoarding />
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
               </ProtectedRoute>
             }
           ></Route>

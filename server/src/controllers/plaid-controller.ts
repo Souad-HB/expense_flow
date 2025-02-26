@@ -165,7 +165,7 @@ export const getInstitutionsLogos = async (
     const response = await plaidClient.institutionsGet({
       client_id: process.env.PLAID_CLIENT_ID || "",
       secret: process.env.PLAID_SECRET || "",
-      count: 5,
+      count: 20,
       offset: 0,
       country_codes: [CountryCode.Us],
       options: { include_optional_metadata: true },
@@ -179,6 +179,6 @@ export const getInstitutionsLogos = async (
   } catch (error) {
     console.log("Logos cannot be retrieved from the server");
     res.status(500).json(error);
-    return; 
+    return;
   }
 };
