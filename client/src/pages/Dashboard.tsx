@@ -1,5 +1,9 @@
+import Sidebar from "../components/Sidebar";
 export const Dashboard = () => {
   return (
-    <div>Dashboard</div>
-  )
-}
+    <>
+      <Sidebar />
+   
+    </>
+  );
+};
