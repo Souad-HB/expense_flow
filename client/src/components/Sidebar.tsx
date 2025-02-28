@@ -1,5 +1,5 @@
 import * as React from "react";
-import { createTheme, styled } from "@mui/material/styles";
+import { extendTheme, styled } from "@mui/material/styles";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import CalculateIcon from "@mui/icons-material/Calculate";
@@ -62,7 +62,7 @@ const NAVIGATION: Navigation = [
   },
 ];
 
-const demoTheme = createTheme({
+const demoTheme = extendTheme({
   colorSchemes: { light: true, dark: true },
   colorSchemeSelector: "class",
   breakpoints: {
@@ -74,6 +74,10 @@ const demoTheme = createTheme({
       xl: 1536,
     },
   },
+  palette: {
+    
+  }
+
 
 });
 

@@ -1,6 +1,5 @@
 import Auth from "../utils/auth.js";
-import { useAuthStore } from "../store.js";
-import { useNavigate } from "react-router-dom";
+
 // FETCH LINK TOKEN GENRATED FROM THE BACKEND
 export const fetchLinkToken = async () => {
   try {
@@ -41,6 +40,27 @@ export const exchangePublicForAccessToken = async (public_token: string) => {
     }
     const data = await response.json();
     console.log("Public token has been exchanged for an access token");
+    return data;
+  } catch (error) {
+    console.log("error retrieving data", error);
+    return;
+  }
+};
+// check if the user has an access token, if they do bypass the onboarding page
+export const hasAccessToken = async () => {
+
+  try {
+    const response = await fetch("/api/plaid/hasaccess", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Auth.getToken()}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error();
+    }
+    const data = await response.json();
     return data;
   } catch (error) {
     console.log("error retrieving data", error);

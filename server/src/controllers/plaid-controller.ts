@@ -52,9 +52,8 @@ export const exchangePublicToken = async (req: Request, res: Response) => {
   const userId = req.user?.id;
   try {
     PUBLIC_TOKEN = req.body;
-    const publicTokenResponse = await plaidClient.itemPublicTokenExchange(
-      PUBLIC_TOKEN
-    );
+    const publicTokenResponse =
+      await plaidClient.itemPublicTokenExchange(PUBLIC_TOKEN);
     // prettyPrintResponse(publicTokenResponse);
     console.log(
       "public response data from exchange api is:",
@@ -180,5 +179,35 @@ export const getInstitutionsLogos = async (
     console.log("Logos cannot be retrieved from the server");
     res.status(500).json(error);
     return;
+  }
+};
+
+export const hasAccessToken = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  const userId = req.user?.id;
+  try {
+    if (!userId) {
+      res.status(404).json("User cannot be found");
+    }
+    const accessTokenAvailable = await PlaidAccount.findOne({
+      where: {
+        userId: userId,
+      },
+    });
+    if (accessTokenAvailable) {
+      console.log(
+        "User has access token, they will be directed to the Home page"
+      );
+      res.status(200).json(true);
+    } else {
+      console.log(
+        "User does not have access token, they will be directed to Onboarding"
+      );
+      res.status(200).json(false);
+    }
+  } catch (error: any) {
+    res.status(500).json("Internal server error");
   }
 };

@@ -3,6 +3,7 @@ import { LoginFormData } from "../interfaces/LoginForm.js";
 import { login } from "../api/authAPI.js";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
+import { hasAccessToken } from "../api/plaidAPI.js";
 
 export const Login = () => {
   const [formData, setFormData] = useState<LoginFormData>({
@@ -13,7 +14,7 @@ export const Login = () => {
   const navigate = useNavigate();
   // handle input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e)
+    console.log(e);
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
@@ -29,7 +30,11 @@ export const Login = () => {
       };
       await login(user);
       console.log("User logged in successfully");
-      navigate("/onboard");
+      const accessTokenAvailable = await hasAccessToken();
+      console.log(accessTokenAvailable)
+      if (accessTokenAvailable === true) {
+        navigate("/dashboard");
+      } else navigate("/onboard");
     } catch (error) {
       console.error("Login failed", error);
       setError("Error logging in, please try again.");
