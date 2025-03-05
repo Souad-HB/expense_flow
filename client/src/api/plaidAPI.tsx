@@ -48,7 +48,6 @@ export const exchangePublicForAccessToken = async (public_token: string) => {
 };
 // check if the user has an access token, if they do bypass the onboarding page
 export const hasAccessToken = async () => {
-
   try {
     const response = await fetch("/api/plaid/hasaccess", {
       method: "GET",

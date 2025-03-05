@@ -1,5 +1,5 @@
 import * as React from "react";
-import { extendTheme, styled } from "@mui/material/styles";
+import { extendTheme } from "@mui/material/styles";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import CalculateIcon from "@mui/icons-material/Calculate";
@@ -8,7 +8,7 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { AppProvider, Navigation, Router } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { PageContainer } from "@toolpad/core/PageContainer";
-import Grid from "@mui/material/Grid2";
+import { Home } from "./Home";
 
 const NAVIGATION: Navigation = [
   {
@@ -63,7 +63,22 @@ const NAVIGATION: Navigation = [
 ];
 
 const demoTheme = extendTheme({
-  colorSchemes: { light: true, dark: true },
+  colorSchemes: {
+    light: {
+      palette: {
+        primary: {
+          main: "#f44336",
+        },
+      },
+    },
+    dark: {
+      palette: {
+        primary: {
+          main: "#f44336",
+        },
+      },
+    },
+  },
   colorSchemeSelector: "class",
   breakpoints: {
     values: {
@@ -74,11 +89,6 @@ const demoTheme = extendTheme({
       xl: 1536,
     },
   },
-  palette: {
-    
-  }
-
-
 });
 
 function useDemoRouter(initialPath: string): Router {
@@ -94,7 +104,6 @@ function useDemoRouter(initialPath: string): Router {
 
   return router;
 }
-
 
 export default function Sidebar() {
   const router = useDemoRouter("/dashboard");
@@ -112,6 +121,7 @@ export default function Sidebar() {
       <DashboardLayout>
         <PageContainer>
           {/* components for dashboard, spending, budget, account, and transactions go here */}
+          <Home />
         </PageContainer>
       </DashboardLayout>
     </AppProvider>
