@@ -6,6 +6,7 @@ import { budgetRouter } from "./budget-routes.js";
 import { plaidRouter } from "./plaid-routes.js";
 import { Router } from "express";
 
+
 const router = Router();
 
 
@@ -16,6 +17,4 @@ router.use("/categories", categoryRouter);
 router.use("/budgets", budgetRouter);
 router.use("/plaid", plaidRouter);
 
-
 export default router;
-

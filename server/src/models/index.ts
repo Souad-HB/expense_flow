@@ -41,14 +41,14 @@ Transaction.belongsTo(User, {
 
 // ----------------- Transaction - Category: OneToMany association --------------------------
 
-Category.hasMany(Transaction, {
-  foreignKey: "categoryId",
-  as: "transactions",
-});
-Transaction.belongsTo(Category, {
-  foreignKey: "categoryId",
-  as: "category",
-});
+// Category.hasMany(Transaction, {
+//   foreignKey: "categoryId",
+//   as: "transactions",
+// });
+// Transaction.belongsTo(Category, {
+//   foreignKey: "categoryId",
+//   as: "category",
+// });
 
 // ----------------- Transaction - Account: OneToMany association --------------------------
 

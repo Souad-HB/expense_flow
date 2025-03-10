@@ -74,7 +74,7 @@ export const Home = () => {
         {accounts.map((account, index) => (
           <div
             key={index}
-            className="flex items-center justify-between bg-rose-50 hover:bg-rose-100 py-4 px-6 rounded-lg shadow-md"
+            className="flex items-center justify-between  py-4 px-6 rounded-lg shadow-md"
           >
             {/* Icon for account type */}
             <Icon subtype={account.subtype} />

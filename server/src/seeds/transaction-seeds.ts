@@ -3,24 +3,22 @@ import { Transaction } from "../models/index.js";
 export const seedTransactions = async () => {
   await Transaction.bulkCreate([
     {
-      transactionType: "Expense",
       amount: 60.0,
-      transactionDate: new Date("2024-11-03T12:34:56Z"),
-      isRecurring: true,
-      frequency: "Monthly",
+      transactionDate: "2024-11-03T12:34:56Z",
+      categoryIcon: null,
+      category: "Food and Drink",
+      merchant: "McDonalds",
       userId: 1,
       accountId: 2,
-      categoryId: 1,
     },
     {
-      transactionType: "Income",
       amount: 3000.0,
-      transactionDate: new Date("2024-12-03T12:34:56Z"),
-      isRecurring: true,
-      frequency: "Bi-Weekly",
+      transactionDate: "2024-12-03T12:34:56Z",
+      category: "shopping",
+      merchant: "New China II",
+      categoryIcon: null,
       userId: 1,
       accountId: 1,
-      categoryId: 1,
     },
   ]);
 };

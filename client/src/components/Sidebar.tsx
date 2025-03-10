@@ -9,12 +9,14 @@ import { AppProvider, Navigation, Router } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { PageContainer } from "@toolpad/core/PageContainer";
 import { Home } from "./Home";
+import { Spending } from "../pages/Spending";
 
 const NAVIGATION: Navigation = [
   {
     segment: "dashboard",
     title: "Dashboard",
     icon: <DashboardIcon />,
+  
   },
   {
     segment: "Spending",
@@ -121,7 +123,9 @@ export default function Sidebar() {
       <DashboardLayout>
         <PageContainer>
           {/* components for dashboard, spending, budget, account, and transactions go here */}
+          
           <Home />
+          <Spending />
         </PageContainer>
       </DashboardLayout>
     </AppProvider>
