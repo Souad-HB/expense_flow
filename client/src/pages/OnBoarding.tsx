@@ -10,15 +10,19 @@ import {
 import {
   exchangePublicForAccessToken,
   fetchLinkToken,
-  fetchLogos,
 } from "../api/plaidAPI";
 import { useEffect, useState } from "react";
 import { Button } from "@mui/material";
+import { LogoSlider } from "../components/LogoSlider";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store";
 
 export const OnBoarding = () => {
+  const navigate = useNavigate();
+  const { markAccountLinked } = useAuthStore();
   // create a state variable token to store the fetched token
   const [token, setToken] = useState<string | null>(null);
-  const [logos, setLogos] = useState<Array<string> | undefined>([]);
+
   // fetch the token when the component mounts
   useEffect(() => {
     const getLinkToken = async () => {
@@ -32,6 +36,8 @@ export const OnBoarding = () => {
     // onSuccess callback is called when a user successfully links an items. it takes two args: the public_token and metadata object
     onSuccess: (public_token: string, metadata: PlaidLinkOnSuccessMetadata) => {
       exchangePublicForAccessToken(public_token);
+      markAccountLinked();
+      navigate("/dashboard")
       console.log("metadata from onSuccess: ", metadata);
     },
 
@@ -60,40 +66,6 @@ export const OnBoarding = () => {
 
   const { open, ready } = usePlaidLink(config);
 
-  // get the logos
-  useEffect(() => {
-    const fetchedLogos = async () => {
-      const data = await fetchLogos();
-      console.log(data);
-
-      const institutionsArr = data.institutions;
-      console.log(institutionsArr);
-      const logosArr = [];
-      const formattedLogosArr = [];
-      let filteredFormattedLogosArr;
-      for (let i = 0; i < institutionsArr.length; i++) {
-        const array = institutionsArr[i];
-        console.log(array);
-
-        logosArr.push(array.logo);
-        for (let j = 0; j < institutionsArr.length; j++) {
-          const formattedLogo = `data:image/png;base64,${logosArr[j]}`;
-          formattedLogosArr.push(formattedLogo);
-        }
-      }
-      filteredFormattedLogosArr = formattedLogosArr.filter((element) => {
-        return (
-          element !== "data:image/png;base64,undefined" &&
-          element !== "data:image/png;base64,null"
-        );
-      });
-      console.log("logos array is", filteredFormattedLogosArr);
-
-      setLogos(filteredFormattedLogosArr);
-    };
-    fetchedLogos();
-  }, []);
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-8">
       {/* Headline */}
@@ -105,16 +77,7 @@ export const OnBoarding = () => {
         insights into your spending habits.
       </p>
       {/* Bank logos carousel / grid */}
-      <div className="flex justify-center gap-4 mb-8">
-        {logos?.map((logo, index) => (
-          <img
-            key={index}
-            src={logo}
-            alt={`Bank ${index}`}
-            className="w-16 h-16 object-contain"
-          />
-        ))}
-      </div>
+      <LogoSlider />
       {/* Link Account Button */}
       <Button
         variant="contained"

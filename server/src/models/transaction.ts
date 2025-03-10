@@ -9,24 +9,19 @@ import {
 } from "sequelize";
 import { User } from "./user.js";
 import { Account } from "./account.js";
-import { Category } from "./category.js";
 
-type transactionType = "Income" | "Expense";
-type frequency = "Weekly" | "Bi-Weekly" | "Monthly" | "Yearly";
 export class Transaction extends Model<
   InferAttributes<Transaction>,
   InferCreationAttributes<Transaction>
 > {
   declare id: CreationOptional<number>;
-  declare transactionType: transactionType;
   declare amount: number;
-  declare transactionDate: Date;
-  declare isRecurring: boolean;
-  declare frequency?: frequency; // weekly/biweekly
-  declare notes?: string;
+  declare transactionDate: string;
   declare userId: ForeignKey<User["id"]> | null;
-  declare accountId: ForeignKey<Account["id"]> ; // where is this transaction being pulled from
-  declare categoryId?: ForeignKey<Category["id"]>;
+  declare accountId: ForeignKey<Account["id"]>; // where is this transaction being pulled from
+  declare category?: string | null;
+  declare categoryIcon?: string | null;
+  declare merchant?: string | null;
 }
 
 export function transactionFactory(sequelize: Sequelize) {
@@ -38,27 +33,11 @@ export function transactionFactory(sequelize: Sequelize) {
         autoIncrement: true,
         allowNull: false,
       },
-      transactionType: {
-        type: DataTypes.ENUM("Income", "Expense"),
-        allowNull: false,
-      },
       amount: {
         type: DataTypes.FLOAT,
         allowNull: false,
       },
       transactionDate: {
-        type: DataTypes.DATE,
-        allowNull: true,
-      },
-      isRecurring: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-      },
-      frequency: {
-        type: DataTypes.ENUM("Weekly", "Bi-Weekly", "Monthly", "Yearly"),
-        allowNull: true,
-      },
-      notes: {
         type: DataTypes.STRING,
         allowNull: true,
       },
@@ -78,13 +57,17 @@ export function transactionFactory(sequelize: Sequelize) {
           key: "id",
         },
       },
-      categoryId: {
-        type: DataTypes.INTEGER,
+      category: {
+        type: DataTypes.STRING,
         allowNull: true,
-        references: {
-          model: Category,
-          key: "id",
-        },
+      },
+      categoryIcon: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      merchant: {
+        type: DataTypes.STRING,
+        allowNull: true,
       },
     },
     {

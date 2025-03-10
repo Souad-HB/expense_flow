@@ -46,6 +46,26 @@ export const exchangePublicForAccessToken = async (public_token: string) => {
     return;
   }
 };
+// check if the user has an access token, if they do bypass the onboarding page
+export const hasAccessToken = async () => {
+  try {
+    const response = await fetch("/api/plaid/hasaccess", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Auth.getToken()}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error();
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log("error retrieving data", error);
+    return;
+  }
+};
 
 // get account balance
 export const fetchAccountBalance = async () => {
@@ -81,12 +101,10 @@ export const fetchLogos = async () => {
       throw new Error("Could not fetch logos from the server");
     }
     const data = await response.json();
-    
+
     return data;
-    
   } catch (error) {
     console.log("Error retrieving data", error);
     throw error;
   }
 };
-

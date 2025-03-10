@@ -8,6 +8,8 @@ import { Configuration, PlaidApi, PlaidEnvironments } from "plaid";
 import bodyParser from "body-parser";
 dotenv.config();
 import util from "util";
+// middleware for api calls logging
+import morgan from "morgan";
 // const forceDatabaseRefresh = false;
 // recreate __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -48,15 +50,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // register the api routes
+app.use(morgan("dev"));
 app.use(routes);
+
 
 try {
   await sequelize.authenticate();
-  
-    console.log("🟢 Connected to the expenses_db");
-    app.listen(PORT, () => {
-      console.log(`🎉 Server is listening on port ${PORT}`);
-    });
+
+  console.log("🟢 Connected to the expenses_db");
+  app.listen(PORT, () => {
+    console.log(`🎉 Server is listening on port ${PORT}`);
+  });
   // });
 } catch (error) {
   console.error("🔴 Unable to connect to the database:", error);

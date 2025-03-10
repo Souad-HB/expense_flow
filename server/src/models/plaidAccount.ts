@@ -15,6 +15,7 @@ export class PlaidAccount extends Model<
 > {
   declare id: CreationOptional<number>;
   declare accessToken: string;
+  declare transactionCursor: string;
   declare itemId: string;
   declare userId: ForeignKey<User["id"]> | null;
 }
@@ -33,6 +34,10 @@ export function PlaidAccountFactory(sequelize: Sequelize) {
         type: DataTypes.STRING,
         unique: true,
       },
+      transactionCursor: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       itemId: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -49,7 +54,6 @@ export function PlaidAccountFactory(sequelize: Sequelize) {
     {
       sequelize,
       timestamps: true,
-      updatedAt: false,
       tableName: "plaid_accounts",
     }
   );

@@ -50,7 +50,7 @@ export const getAllRecurringTransactions = async (
     const transactions = await Transaction.findAll({
       where: {
         userId,
-        isRecurring: true,
+       
       },
       include: {
         model: User,
@@ -87,7 +87,7 @@ export const getAllRecurringTransactionsNext7Days = async (
     const transactionsNext7Days = await Transaction.findAll({
       where: {
         userId,
-        isRecurring: true,
+        
         transactionDate: { [Op.between]: [today, weekFromNow] },
       },
     });
@@ -124,7 +124,7 @@ export const getAllRecurringTransactionsOfTheMonth = async (
     const transactionsNext7Days = await Transaction.findAll({
       where: {
         userId: userId,
-        isRecurring: true,
+        
         transactionDate: { $between: [firstDayOfMonth, lastDayOfMonth] },
       },
     });
@@ -149,8 +149,7 @@ export const createTransaction = async (req: Request, res: Response) => {
     amount,
     transactionDate,
     isRecurring,
-    frequency,
-    notes,
+  
     userId,
     accountId,
     categoryId,
@@ -191,15 +190,12 @@ export const createTransaction = async (req: Request, res: Response) => {
       return;
     }
     const newTransaction = await Transaction.create({
-      transactionType,
+      
       amount,
-      transactionDate,
-      isRecurring,
-      frequency,
-      notes,
+      transactionDate,  
       userId,
       accountId,
-      categoryId,
+     
     });
 
     res.status(201).json({
