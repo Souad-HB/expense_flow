@@ -9,44 +9,19 @@ import { AppProvider, Navigation, Router } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { PageContainer } from "@toolpad/core/PageContainer";
 import { Home } from "./Home";
-import { Spending } from "../pages/Spending";
+import { Transactions } from "./Transactions";
 
 const NAVIGATION: Navigation = [
   {
     segment: "dashboard",
     title: "Dashboard",
     icon: <DashboardIcon />,
-  
   },
   {
-    segment: "Spending",
+    segment: "spending",
     title: "Spending",
     icon: <ShoppingCartIcon />,
   },
-  // {
-  //   kind: "divider",
-  // },
-  // {
-  //   kind: "header",
-  //   title: "Analytics",
-  // },
-  // {
-  //   segment: "reports",
-  //   title: "Reports",
-  //   icon: <BarChartIcon />,
-  //   children: [
-  //     {
-  //       segment: "sales",
-  //       title: "Sales",
-  //       icon: <DescriptionIcon />,
-  //     },
-  //     {
-  //       segment: "traffic",
-  //       title: "Traffic",
-  //       icon: <DescriptionIcon />,
-  //     },
-  //   ],
-  // },
   {
     segment: "Budget",
     title: "Budget",
@@ -123,9 +98,8 @@ export default function Sidebar() {
       <DashboardLayout>
         <PageContainer>
           {/* components for dashboard, spending, budget, account, and transactions go here */}
-          
-          <Home />
-          <Spending />
+          {router.pathname === "/dashboard" && <Home />}
+          {router.pathname === "/spending" && <Transactions />}
         </PageContainer>
       </DashboardLayout>
     </AppProvider>

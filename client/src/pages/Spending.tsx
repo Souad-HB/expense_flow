@@ -1,7 +1,9 @@
 import { useEffect } from "react"
 import { fetchTransactions } from "../api/transactionAPI";
+import Sidebar from "../components/Sidebar";
 
 export const Spending = () => {
+
 
   useEffect(() => {
     const transactions = fetchTransactions();
@@ -9,6 +11,10 @@ export const Spending = () => {
   }
   , []);
   return (
-    <div>Spending</div>
-  )
+    <>
+      {" "}
+      <Sidebar />
+      <div>Spending</div>
+    </>
+  );
 }
