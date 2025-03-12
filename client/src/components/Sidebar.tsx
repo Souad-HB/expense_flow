@@ -9,7 +9,7 @@ import { AppProvider, Navigation, Router } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { PageContainer } from "@toolpad/core/PageContainer";
 import { Home } from "./Home";
-import { Spending } from "../pages/Spending";
+
 
 const NAVIGATION: Navigation = [
   {
@@ -19,41 +19,17 @@ const NAVIGATION: Navigation = [
   
   },
   {
-    segment: "Spending",
+    segment: "spending",
     title: "Spending",
     icon: <ShoppingCartIcon />,
   },
-  // {
-  //   kind: "divider",
-  // },
-  // {
-  //   kind: "header",
-  //   title: "Analytics",
-  // },
-  // {
-  //   segment: "reports",
-  //   title: "Reports",
-  //   icon: <BarChartIcon />,
-  //   children: [
-  //     {
-  //       segment: "sales",
-  //       title: "Sales",
-  //       icon: <DescriptionIcon />,
-  //     },
-  //     {
-  //       segment: "traffic",
-  //       title: "Traffic",
-  //       icon: <DescriptionIcon />,
-  //     },
-  //   ],
-  // },
   {
-    segment: "Budget",
+    segment: "budget",
     title: "Budget",
     icon: <CalculateIcon />,
   },
   {
-    segment: "Accounts",
+    segment: "accounts",
     title: "Account",
     icon: <AccountBalanceWalletIcon />,
   },
@@ -94,13 +70,33 @@ const demoTheme = extendTheme({
 });
 
 function useDemoRouter(initialPath: string): Router {
-  const [pathname, setPathname] = React.useState(initialPath);
+  const [pathname, setPathname] = React.useState(() => {
+    const url = new URL(window.location.href);
+    return url.pathname || initialPath;
+  });
+
+  React.useEffect(() => {
+    const handlePopState = () => {
+      const url = new URL(window.location.href);
+      setPathname(url.pathname);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
 
   const router = React.useMemo(() => {
     return {
       pathname,
-      searchParams: new URLSearchParams(),
-      navigate: (path: string | URL) => setPathname(String(path)),
+      searchParams: new URLSearchParams(window.location.search),
+      navigate: (path: string | URL) => {
+        const newUrl = typeof path === "string" ? path : path.toString();
+        window.history.pushState(null, "", newUrl);
+        setPathname(newUrl);
+      },
     };
   }, [pathname]);
 
@@ -122,10 +118,7 @@ export default function Sidebar() {
     >
       <DashboardLayout>
         <PageContainer>
-          {/* components for dashboard, spending, budget, account, and transactions go here */}
-          
           <Home />
-          <Spending />
         </PageContainer>
       </DashboardLayout>
     </AppProvider>

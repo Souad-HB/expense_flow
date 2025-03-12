@@ -14,6 +14,10 @@ export const fetchTransactions = async () => {
     }
     const data = await response.json();
     console.log(data);
+    // only extract the transactions
+    const transactionsData = data.Transaction;
+    console.log("transaction data is: ",transactionsData);
+    return transactionsData
   } catch (error) {
     console.log("Error retrieving transactions", error);
   }
