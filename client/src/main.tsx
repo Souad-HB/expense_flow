@@ -12,9 +12,11 @@ import { Landing } from "./pages/Landing.tsx";
 import { Dashboard } from "./pages/Dashboard.tsx";
 import { Spending } from "./pages/Spending.tsx";
 
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
+    
       <Routes>
         <Route path="/" element={<App />}>
           <Route index element={<Landing />}></Route>
