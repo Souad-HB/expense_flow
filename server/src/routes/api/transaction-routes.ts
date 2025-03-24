@@ -4,6 +4,7 @@ import {
   getAllRecurringTransactionsOfTheMonth,
   createTransaction,
   getAllTransactions,
+  transactionsPerDate,
 } from "../../controllers/transaction-controller.js";
 
 import express from "express";
@@ -27,5 +28,8 @@ router.get("/recurring/month", getAllRecurringTransactionsOfTheMonth);
 // POST create a new transaction
 // transactions/
 router.post("/", createTransaction);
+
+// get transactionsperdate
+router.get("/transactions-per-date", transactionsPerDate);
 
 export { router as transactionRouter };
