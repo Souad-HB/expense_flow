@@ -22,3 +22,8 @@ export const fetchTransactions = async () => {
     console.log("Error retrieving transactions", error);
   }
 };
+
+// get the transactions based on a given date
+
+
+

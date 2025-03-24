@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { Transaction, User } from "../models/index.js";
 import { Op } from "sequelize";
 
+
 // getAllTransactions
 export const getAllTransactions = async (req: Request, res: Response) => {
   try {
@@ -31,6 +32,62 @@ export const getAllTransactions = async (req: Request, res: Response) => {
   }
 };
 
+// get the transactions based on a given date
+export const transactionsPerDate = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  // user input
+  const { startDate, endDate } = req.body;
+  // validate the dates
+  if (
+    !startDate ||
+    !endDate ||
+    typeof startDate !== "string" ||
+    typeof endDate !== "string"
+  ) {
+    res.status(400).json({ message: "Start date and end date are required" });
+    return;
+  }
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(404).json({ message: "user not found" });
+      return;
+    }
+
+    // parse the dates to ensure they're valid date types
+
+    const parsedStartDate = new Date(startDate as string);
+    const parsedEndDate = new Date(endDate as string);
+
+    if (isNaN(parsedStartDate.getTime()) || isNaN(parsedEndDate.getTime())) {
+      return res.status(400).json({ message: "Invalid date format" });
+    }
+
+    const transactionsBetween2Dates = await Transaction.findAll({
+      where: {
+        userId: userId,
+        transactionDate: {
+          [Op.between]: [parsedStartDate, parsedEndDate],
+        },
+      },
+    });
+    if (transactionsBetween2Dates.length > 0) {
+      res.status(200).json(transactionsBetween2Dates);
+      return;
+    } else {
+      console.log(
+        "No transactions found between that start and end date, make a default Souad"
+      );
+    }
+  } catch (error: any) {
+    console.log("Error retrieving dated transactions from the database");
+    res.status(500).json({ message: error.message });
+    return;
+  }
+};
+
 // getAllRecurringTransactions
 export const getAllRecurringTransactions = async (
   req: Request,
@@ -50,7 +107,6 @@ export const getAllRecurringTransactions = async (
     const transactions = await Transaction.findAll({
       where: {
         userId,
-       
       },
       include: {
         model: User,
@@ -87,7 +143,7 @@ export const getAllRecurringTransactionsNext7Days = async (
     const transactionsNext7Days = await Transaction.findAll({
       where: {
         userId,
-        
+
         transactionDate: { [Op.between]: [today, weekFromNow] },
       },
     });
@@ -124,7 +180,7 @@ export const getAllRecurringTransactionsOfTheMonth = async (
     const transactionsNext7Days = await Transaction.findAll({
       where: {
         userId: userId,
-        
+
         transactionDate: { $between: [firstDayOfMonth, lastDayOfMonth] },
       },
     });
@@ -149,7 +205,7 @@ export const createTransaction = async (req: Request, res: Response) => {
     amount,
     transactionDate,
     isRecurring,
-  
+
     userId,
     accountId,
     categoryId,
@@ -190,12 +246,10 @@ export const createTransaction = async (req: Request, res: Response) => {
       return;
     }
     const newTransaction = await Transaction.create({
-      
       amount,
-      transactionDate,  
+      transactionDate,
       userId,
       accountId,
-     
     });
 
     res.status(201).json({
