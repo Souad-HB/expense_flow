@@ -5,6 +5,7 @@ import { prettyPrintResponse } from "../server.js";
 import { PlaidAccount, Account, Transaction } from "../models/index.js";
 import { ITransaction } from "../interfaces/Transaction.js";
 
+
 // PLAID_PRODUCTS is a comma-separated list of products to use when initializing
 // Link. Note that this list must contain 'assets' in order for the app to be
 // able to create and retrieve asset reports.
@@ -32,6 +33,9 @@ export const createLinkToken = async (req: Request, res: Response) => {
     },
     client_name: "Expense Flow App",
     products: PLAID_PRODUCTS,
+    transactions: {
+      days_requested: 180,
+    },
     country_codes: PLAID_COUNTRY_CODES,
     language: "en",
   };
@@ -316,5 +320,61 @@ export const getTransactions = async (
   } catch (error) {
     console.log("Error getting transactions", error);
     return res.status(500).json({ message: "Failed to get transactions" });
+  }
+};
+
+// get recurring transactions from plaid
+export const getRecurringTransactions = async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+  if (!userId) {
+    res.status(404).json({ message: "User not found" });
+    return;
+  }
+  try {
+    const dbRecord = await PlaidAccount.findOne({
+      where: { userId: userId },
+    });
+    const access_token = dbRecord?.accessToken;
+    if (
+      !access_token ||
+      typeof access_token != "string" ||
+      typeof access_token === "undefined"
+    ) {
+      res
+        .status(400)
+        .json({ message: "access token cant be retrieved from the database" });
+        return;
+    }
+    // at this point, I could also retrieve the accountIds, but it's optional, and if an accountId doesnt exist if will throw an error.
+    // I prefer having plaid retrieve all active accounts on the found item
+    const configs = {
+      access_token: access_token as string,
+      secret: process.env.PLAID_SECRET as string,
+      client_id: process.env.PLAID_CLIENT_ID as string,
+    };
+    const response = await plaidClient.transactionsRecurringGet(configs);
+    let inflowStreams = response.data.inflow_streams;
+    let outflowStreams = response.data.outflow_streams;
+    let updatedDateTime = response.data.updated_datetime;
+    let requestId = response.data.request_id;
+    res
+      .status(200)
+      .json({
+        message: "Recurring transactions retrieved successfully",
+        inflowStreams, outflowStreams, updatedDateTime, requestId
+      });
+      return;
+  } catch (error) {
+    console.log(
+      "error retrieving the recurring transactions from the API",
+      error
+    );
+    res
+      .status(500)
+      .json({
+        message: "error retrieving recurring transactions from the plaid API",
+        error,
+      });
+      return;
   }
 };

@@ -3,6 +3,7 @@ import {
   exchangePublicToken,
   getAccountBalance,
   getInstitutionsLogos,
+  getRecurringTransactions,
   getTransactions,
   hasAccessToken,
 } from "../../controllers/plaid-controller.js";
@@ -20,5 +21,6 @@ router.get("/accounts/balance/get", getAccountBalance);
 router.get("/institutions/get", getInstitutionsLogos);
 router.get("/hasaccess", hasAccessToken);
 router.post("/transactions/sync", getTransactions);
+router.post("/transactions/recurring/get", getRecurringTransactions);
 
 export { router as plaidRouter };
