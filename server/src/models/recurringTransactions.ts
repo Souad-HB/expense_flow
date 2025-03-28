@@ -18,9 +18,6 @@ export class RecurringTransactions extends Model<
   declare userId: ForeignKey<User["id"]>;
   declare streamId: string;
   declare accountId: ForeignKey<Account["plaidAccountId"]>;
-  declare category: string;
-  declare subCategory: string | null;
-  declare categoryId: string;
   declare merchantName: string | null;
   declare description: string;
   declare amount: number;
@@ -54,7 +51,7 @@ export function RecurringTransactionsFactory(sequelize: Sequelize) {
         },
       },
       accountId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false,
         references: {
           model: Account,
@@ -65,18 +62,6 @@ export function RecurringTransactionsFactory(sequelize: Sequelize) {
         type: DataTypes.STRING,
         unique: true,
       },
-      category: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      subCategory: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
-      categoryId: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
       merchantName: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -86,11 +71,11 @@ export function RecurringTransactionsFactory(sequelize: Sequelize) {
         allowNull: false,
       },
       amount: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.FLOAT,
         allowNull: false,
       },
       averageAmount: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.FLOAT,
         allowNull: false,
       },
       frequency: {
@@ -114,7 +99,7 @@ export function RecurringTransactionsFactory(sequelize: Sequelize) {
         allowNull: false,
       },
       transactionId: {
-        type: DataTypes.JSONB,
+        type: DataTypes.ARRAY(DataTypes.STRING),
         allowNull: true,
       },
       type: {
@@ -129,7 +114,7 @@ export function RecurringTransactionsFactory(sequelize: Sequelize) {
     {
       sequelize,
       timestamps: true,
-      tableName: "recurring-_transactions",
+      tableName: "recurring_transactions",
     }
   );
   return RecurringTransactions;
