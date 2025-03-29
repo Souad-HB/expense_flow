@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { Transaction, User } from "../models/index.js";
 import { Op } from "sequelize";
 
-
 // getAllTransactions
 export const getAllTransactions = async (req: Request, res: Response) => {
   try {
@@ -88,6 +87,34 @@ export const transactionsPerDate = async (
   }
 };
 
+// get the recurring subscriptions
+export const getSubscriptions = async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+  try {
+    if (!userId) {
+      res.status(404).json("User not found");
+      console.log("User not found, subscriptions can't be retrieved");
+    }
+    const subscriptions = await Transaction.findAll({
+      where: { userId: userId, category: "Subscription" },
+    });
+    if (!subscriptions.length) {
+      res
+        .status(404)
+        .json({ message: "No subscriptions were found for that user" });
+      console.log("No subscriptions found for that user");
+    }
+    res
+      .status(200)
+      .json({
+        message: "Subscriptions are successfully retrieved from the database",
+      });
+  } catch (error: any) {
+    res.status(500).json({ message: "Error fetching subscriptions", error });
+  }
+};
+
+// the bottom can be deleted
 // getAllRecurringTransactions
 export const getAllRecurringTransactions = async (
   req: Request,

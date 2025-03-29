@@ -311,7 +311,7 @@ export const getTransactions = async (
         transactionDate: transaction.date,
         userId: userId,
         accountId: account,
-        category: transaction.category?.join(", "),
+        category: transaction.personal_finance_category?.primary,
         categoryIcon: transaction.personal_finance_category_icon_url,
         merchant: transaction.merchant_name,
       });
@@ -376,6 +376,7 @@ export const getRecurringTransactions = async (req: Request, res: Response) => {
         predictedNextDate: stream.predicted_next_date,
         status: stream.status,
         transactionId: stream.transaction_ids,
+        // the array.some method tests whether at least one element in the array passes the test implementation provided by the function
         type: inflowStreams.some((s) => s.stream_id === stream.stream_id)
           ? "inflow"
           : "outflow",
@@ -405,3 +406,6 @@ export const getRecurringTransactions = async (req: Request, res: Response) => {
     return;
   }
 };
+
+
+
