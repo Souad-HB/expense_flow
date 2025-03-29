@@ -1,4 +1,4 @@
-import React from "react";
+// Removed unused React import
 import { useEffect, useState } from "react";
 import { fetchAccountBalance } from "../api/plaidAPI";
 import Box from "@mui/material/Box";
@@ -22,14 +22,17 @@ import { styled } from "@mui/material/styles";
 export const Home = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+
   useEffect(() => {
     // fetch account data
     const getAccountBalance = async () => {
       try {
         const data = await fetchAccountBalance();
-        console.log(data);
-
-        setAccounts(data.accounts);
+        if (data && data.accounts) {
+          setAccounts(data.accounts);
+        } else {
+          console.error("No accounts data received");
+        }
       } catch (error) {
         console.log("Could not fetch account balance");
       }
@@ -43,7 +46,7 @@ export const Home = () => {
 
     getAccountBalance();
   }, []);
-  
+
   console.log("accounts on home are:", accounts);
   console.log("transactions on home are:", transactions);
 
@@ -87,7 +90,6 @@ export const Home = () => {
       <h2 className="text-3xl mt-5 mb-10 font-extrabold tracking-wider text-gray-800">
         Overview
       </h2>
-
       {/* Grid layout for account display */}
       <div
         className={`grid grid-cols-1 md:grid-rows-${accounts.length} gap-y-10 gap-x-6 w-full max-w-3xl`}
@@ -102,17 +104,16 @@ export const Home = () => {
 
             {/* Account Name */}
             <span className="text-xl font-semibold text-gray-800 flex-1 ml-4">
-              {account.name}
+              {account.accountName}
             </span>
 
             {/* Account Balance */}
             <span className="text-xl font-bold text-gray-800">
-              ${account.balances.current.toFixed(2)}
+              ${account.balanceCurrent.toFixed(2) || "0.00"}
             </span>
           </div>
         ))}
-      </div>
-
+      </div>{" "}
       {/* Activity layout to display latest transactions */}
       <h2 className="text-3xl mt-15 mb-10 font-extrabold tracking-wider text-gray-800">
         Activity
@@ -164,7 +165,8 @@ export const Home = () => {
             </TableBody>
           </Table>
         </TableContainer>
-      </div>
+      </div>{" "}
+      )
     </Box>
   );
 };

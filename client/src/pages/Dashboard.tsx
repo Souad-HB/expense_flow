@@ -5,7 +5,6 @@ export const Dashboard = () => {
   return (
     <>
       <Sidebar pageContent={<Home />} />
-      <Home />
     </>
   );
 };

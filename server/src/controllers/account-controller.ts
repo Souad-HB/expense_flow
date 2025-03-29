@@ -1,6 +1,33 @@
 import { Request, Response } from "express";
 import { Account, User } from "../models/index.js";
 
+// get account balance from database
+export const getAccountBalanceFromDB = async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+  try {
+    if (!userId) {
+      res.status(404).json({
+        message: "User not found, account balance can't be retrieved",
+      });
+    }
+    const accounts = await Account.findAll({ where: { userId: userId } });
+    if (!accounts.length) {
+      res.status(404).json("Accounts don't exist on the database");
+      console.log("accounts dont exist on the database");
+    }
+    res.status(200).json({
+      message: "accounts are successfully retrieved from the database",
+      accounts,
+    });
+  } catch (error) {
+    res.status(200).json({
+      message: "Failure retrieving accounts from the database",
+      error,
+    });
+    console.log("Failure retrieving accounts from the database");
+  }
+};
+
 // create an account
 // POST /accounts
 export const createAccount = async (req: Request, res: Response) => {

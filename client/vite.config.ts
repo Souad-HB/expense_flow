@@ -12,11 +12,13 @@ export default defineConfig({
         target: "http://localhost:3001",
         changeOrigin: true,
         secure: false, // please verify ssl security after to turn that off
+        timeout: 60000,
       },
       "/auth": {
         target: "http://localhost:3001",
         changeOrigin: true,
         secure: false,
+        timeout: 60000,
       },
     },
   },

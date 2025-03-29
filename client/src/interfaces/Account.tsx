@@ -1,9 +1,7 @@
 export interface Account {
-  name: string;
-  balances: {
-    available: number;
-    current: number;
-  };
+  accountName: string;
+  balanceAvailable: number;
+  balanceCurrent: number;
   subtype: string;
   type: string;
 }
