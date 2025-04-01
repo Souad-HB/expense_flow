@@ -47,7 +47,7 @@ export const categoriesPerDate = async (
   res: Response
 ): Promise<any> => {
   // user input
-  const { startDate, endDate } = req.body;
+  const { startDate, endDate } = req.query;
   // validate the dates
   if (
     !startDate ||
