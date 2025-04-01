@@ -18,18 +18,18 @@ import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
 import { fetchCategories } from "../api/categoryAPI";
 import { Category } from "../interfaces/Category";
-import DateRangePicker from "./DateRangePicker";
-
+import { DateRangePickerComponent } from "./DateRangePickerComponent";
 
 export const Home = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+
   const [dateRange, setDateRange] = useState<{
     startDate: string;
     endDate: string;
   }>({
     startDate: new Date().getMonth().toString(),
-    endDate: new Date().toString(),
+    endDate: new Date().toDateString(),
   });
 
   const handleDateChange = (startDate: string, endDate: string) => {
@@ -138,13 +138,17 @@ export const Home = () => {
             </span>
           </div>
         ))}
-      </div>{" "}
-      {/* Activity layout to display latest transactions per category */}
-      <h2 className="text-3xl mt-15 mb-10 font-extrabold tracking-wider text-gray-800">
-        Activity
-      </h2>
-      {/*datetime picker */}
-      <DateRangePicker onDateChange={handleDateChange} />
+      </div>
+      <div className="flex flex-row ">
+        {/* Activity layout to display latest transactions per category */}
+        <h2 className="text-3xl mt-15 mb-10 font-extrabold tracking-wider text-gray-800 ">
+          Activity
+        </h2>
+        {/*datetime picker */}
+        <div className="content-center mt-6 pl-4">
+          <DateRangePickerComponent onDateChange={handleDateChange} />
+        </div>
+      </div>
       <div>
         {/* transactions table:  */}
         <TableContainer component={Paper}>
@@ -162,7 +166,7 @@ export const Home = () => {
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <StyledTableCell align="left">
-                    {category.totalAmount}
+                    {category.totalAmount.toFixed(2)}
                   </StyledTableCell>
                   <StyledTableCell align="left">
                     <div className="flex items-center">
