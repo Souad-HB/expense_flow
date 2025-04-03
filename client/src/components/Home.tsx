@@ -23,13 +23,13 @@ import { DateRangePickerComponent } from "./DateRangePickerComponent";
 export const Home = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-
+  const date = new Date();
   const [dateRange, setDateRange] = useState<{
     startDate: string;
     endDate: string;
   }>({
-    startDate: new Date().getMonth().toString(),
-    endDate: new Date().toDateString(),
+    startDate: new Date(date.getFullYear(), date.getMonth() -1, 1).toString(),
+    endDate: new Date(date.getFullYear(), date.getMonth(), 0).toString(),
   });
 
   const handleDateChange = (startDate: string, endDate: string) => {

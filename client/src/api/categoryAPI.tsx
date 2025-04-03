@@ -6,6 +6,12 @@ export const fetchCategories = async (dateRange: {
 }) => {
   try {
     const url = `/api/categories/categories-per-date?startDate=${dateRange.startDate}&endDate=${dateRange.endDate}`;
+    console.log(
+      "start date for the api call is",
+      dateRange.startDate,
+      "and end date for the api call is: ",
+      dateRange.endDate
+    );
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -13,10 +19,14 @@ export const fetchCategories = async (dateRange: {
         authorization: `Bearer ${Auth.getToken()}`,
       },
     });
+
     if (!response.ok) {
-      throw new Error("Invalid API respomse, check network tab!");
+      throw new Error("Invalid API response, check network tab!");
     }
     const allCategories = await response.json();
+    if (!allCategories.length) {
+      console.log("No transactions found within the given date range");
+    }
     console.log("all categories from db are: ", allCategories);
     return allCategories;
   } catch (error) {

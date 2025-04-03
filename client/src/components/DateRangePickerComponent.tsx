@@ -2,7 +2,6 @@ import React from "react";
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import { DateRangePicker, RangeKeyDict } from "react-date-range";
-import { addDays } from "date-fns";
 import { useState } from "react";
 import { Button, Modal } from "@mui/material";
 import { Box } from "@mui/system";
@@ -25,12 +24,12 @@ const style = {
 export const DateRangePickerComponent = ({ onDateChange }: dateRangeProps) => {
   // state for open and close for the modal
   const [modalOpen, setModelOpen] = useState<boolean>(false);
-
+  const date = new Date();
   // eventually we want to get the range of start and end date
   const [range, setRange] = React.useState([
     {
-      startDate: new Date(),
-      endDate: addDays(new Date(), 7),
+      startDate: new Date(date.getFullYear(), date.getMonth() - 1, 1),
+      endDate: new Date(date.getFullYear(), date.getMonth(), 0),
       key: "selection",
     },
   ]);
@@ -64,8 +63,9 @@ export const DateRangePickerComponent = ({ onDateChange }: dateRangeProps) => {
       <Button variant="outlined" onClick={handleOpen}>
         <DateRangeIcon className="mr-4" />
         <div className="font-bold">
-          {range[0].startDate.toDateString()} -{" "}
-          {range[0].endDate.toDateString()}
+          {range[0].startDate.toDateString().slice(4)} -
+          {/* {" the slice is to remove the day 'SUN' for example"} */}{" "}
+          {range[0].endDate.toDateString().slice(4)}
         </div>
       </Button>
       <Modal open={modalOpen} onClose={handleClose}>
