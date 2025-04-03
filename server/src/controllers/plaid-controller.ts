@@ -2,7 +2,12 @@ import { Request, Response } from "express";
 import { plaidClient } from "../server.js";
 import { Products, CountryCode } from "plaid";
 import { prettyPrintResponse } from "../server.js";
-import { PlaidAccount, Account, Transaction } from "../models/index.js";
+import {
+  PlaidAccount,
+  Account,
+  Transaction,
+  RecurringTransactions,
+} from "../models/index.js";
 import { ITransaction } from "../interfaces/Transaction.js";
 
 // PLAID_PRODUCTS is a comma-separated list of products to use when initializing
@@ -32,6 +37,9 @@ export const createLinkToken = async (req: Request, res: Response) => {
     },
     client_name: "Expense Flow App",
     products: PLAID_PRODUCTS,
+    transactions: {
+      days_requested: 180,
+    },
     country_codes: PLAID_COUNTRY_CODES,
     language: "en",
   };
@@ -303,7 +311,7 @@ export const getTransactions = async (
         transactionDate: transaction.date,
         userId: userId,
         accountId: account,
-        category: transaction.category?.join(", "),
+        category: transaction.personal_finance_category?.primary,
         categoryIcon: transaction.personal_finance_category_icon_url,
         merchant: transaction.merchant_name,
       });
@@ -318,3 +326,86 @@ export const getTransactions = async (
     return res.status(500).json({ message: "Failed to get transactions" });
   }
 };
+
+// get recurring transactions from plaid
+export const getRecurringTransactions = async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+  if (!userId) {
+    res.status(404).json({ message: "User not found" });
+    return;
+  }
+  try {
+    const dbRecord = await PlaidAccount.findOne({
+      where: { userId: userId },
+    });
+    const access_token = dbRecord?.accessToken;
+    if (!access_token || typeof access_token != "string") {
+      res
+        .status(400)
+        .json({ message: "access token cant be retrieved from the database" });
+      return;
+    }
+    // at this point, I could also retrieve the accountIds, but it's optional, and if an accountId doesnt exist if will throw an error.
+    // I prefer having plaid retrieve all active accounts on the found item
+    const configs = {
+      access_token: access_token as string,
+    };
+    const response = await plaidClient.transactionsRecurringGet(configs);
+    let inflowStreams = response.data.inflow_streams;
+    let outflowStreams = response.data.outflow_streams;
+    let updatedDateTime = response.data.updated_datetime;
+    let requestId = response.data.request_id;
+    if (response.data) {
+    }
+    // store the data in the database model RecuuringTransactions
+    const allStreams = [...inflowStreams, ...outflowStreams]; // combining the individual inflowStreams and outflowStreams arrays into a single new array. REMEMBER! spread operator creates a copy of the array, This avoid modifying the original
+
+    for (const stream of allStreams) {
+      await RecurringTransactions.upsert({
+        userId: userId,
+        streamId: stream.stream_id,
+        accountId: stream.account_id,
+        merchantName: stream.merchant_name || null,
+        description: stream.description,
+        // ?? is a nullish coelescing operator, it's a default when the amount on the right ends up being null or undefind
+        amount: stream.last_amount.amount ?? 0, // Last transaction amount
+        averageAmount: stream.average_amount.amount ?? 0,
+        frequency: stream.frequency,
+        firstDate: stream.first_date,
+        lastDate: stream.last_date,
+        predictedNextDate: stream.predicted_next_date,
+        status: stream.status,
+        transactionId: stream.transaction_ids,
+        // the array.some method tests whether at least one element in the array passes the test implementation provided by the function
+        type: inflowStreams.some((s) => s.stream_id === stream.stream_id)
+          ? "inflow"
+          : "outflow",
+        isActive: stream.is_active,
+      });
+    }
+    // response status
+    res.status(200).json({
+      message:
+        "Recurring transactions retrieved successfully and stored in the database",
+      inflowStreams,
+      outflowStreams,
+      updatedDateTime,
+      requestId,
+    });
+    return;
+  } catch (error) {
+    console.log(
+      "error retrieving the recurring transactions from the API or storing data in the database",
+      error
+    );
+    res.status(500).json({
+      message:
+        "error retrieving recurring transactions from the plaid API or storing data in the database",
+      error,
+    });
+    return;
+  }
+};
+
+
+

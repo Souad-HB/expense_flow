@@ -70,7 +70,7 @@ export const hasAccessToken = async () => {
 // get account balance
 export const fetchAccountBalance = async () => {
   try {
-    const response = await fetch("api/plaid/accounts/balance/get", {
+    const response = await fetch("api/accounts", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

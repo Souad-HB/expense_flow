@@ -13,17 +13,14 @@ export const fetchTransactions = async () => {
       throw new Error("Failed to retrieve transactions");
     }
     const data = await response.json();
-    console.log(data);
+
     // only extract the transactions
     const transactionsData = data.Transaction;
-    console.log("transaction data is: ",transactionsData);
-    return transactionsData
+
+    return transactionsData;
   } catch (error) {
     console.log("Error retrieving transactions", error);
   }
 };
 
 // get the transactions based on a given date
-
-
-

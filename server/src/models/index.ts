@@ -5,6 +5,7 @@ import { accountFactory } from "./account.js";
 import { budgetFactory } from "./budget.js";
 import { transactionFactory } from "./transaction.js";
 import { PlaidAccountFactory } from "./plaidAccount.js";
+import { RecurringTransactionsFactory } from "./recurringTransactions.js";
 
 // initialize the models:
 
@@ -14,6 +15,7 @@ const Category = categoryFactory(sequelize);
 const Account = accountFactory(sequelize);
 const Budget = budgetFactory(sequelize);
 const Transaction = transactionFactory(sequelize);
+const RecurringTransactions = RecurringTransactionsFactory(sequelize);
 
 // ----------------- Account - User: OneToMany association --------------------------
 
@@ -93,4 +95,22 @@ PlaidAccount.belongsTo(User, {
   as: "user",
 });
 
-export { User, Category, Account, Budget, Transaction, PlaidAccount };
+// ----------------- User  - RecurringTransactions: OneToMany association --------------------------
+User.hasMany(RecurringTransactions, {
+  foreignKey: "userId",
+  as: "user",
+});
+RecurringTransactions.belongsTo(User, {
+  foreignKey: "userId",
+  as: "user",
+});
+
+export {
+  User,
+  Category,
+  Account,
+  Budget,
+  Transaction,
+  PlaidAccount,
+  RecurringTransactions,
+};

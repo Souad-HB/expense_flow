@@ -1,7 +1,13 @@
+interface PersonalFinanceCategory {
+  confidence_level?: string | null | undefined;
+  detailed?: string;
+  primary: string;
+}
+
 export interface ITransaction {
   account_id: string;
   amount: number;
-  category?: string[] | null; // array of strings
+  personal_finance_category?: PersonalFinanceCategory | null | undefined;
   category_id: string | null;
   date: string;
   name: string;

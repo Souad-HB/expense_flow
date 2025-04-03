@@ -1,4 +1,4 @@
-import React from "react";
+// Removed unused React import
 import { useEffect, useState } from "react";
 import { fetchAccountBalance } from "../api/plaidAPI";
 import Box from "@mui/material/Box";
@@ -6,9 +6,7 @@ import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import SavingsIcon from "@mui/icons-material/Savings";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
-import { fetchTransactions } from "../api/transactionAPI";
 import { Account } from "../interfaces/Account";
-import { Transaction } from "../interfaces/Transaction";
 // imports for mui table for the transactions
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -18,34 +16,64 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
+import { fetchCategories } from "../api/categoryAPI";
+import { Category } from "../interfaces/Category";
+import { DateRangePickerComponent } from "./DateRangePickerComponent";
 
 export const Home = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const date = new Date();
+  const [dateRange, setDateRange] = useState<{
+    startDate: string;
+    endDate: string;
+  }>({
+    startDate: new Date(date.getFullYear(), date.getMonth() -1, 1).toString(),
+    endDate: new Date(date.getFullYear(), date.getMonth(), 0).toString(),
+  });
+
+  const handleDateChange = (startDate: string, endDate: string) => {
+    setDateRange({ startDate: startDate, endDate: endDate });
+  };
+  const fetchFilteredData = async (dateRange: {
+    startDate: string;
+    endDate: string;
+  }) => {
+    // retrieve an overview of the categories to be displayed on the home page per month
+    try {
+      const data = await fetchCategories({
+        startDate: dateRange.startDate,
+        endDate: dateRange.endDate,
+      });
+      setCategories(data || []);
+    } catch (error) {
+      console.log("Error fetching filtered transactions per category", error);
+    }
+  };
+  useEffect(() => {
+    if (dateRange.startDate && dateRange.endDate) fetchFilteredData(dateRange);
+  }, [dateRange]);
+
   useEffect(() => {
     // fetch account data
     const getAccountBalance = async () => {
       try {
         const data = await fetchAccountBalance();
-        console.log(data);
-
-        setAccounts(data.accounts);
+        if (data && data.accounts) {
+          setAccounts(data.accounts);
+        } else {
+          console.error("No accounts data received");
+        }
       } catch (error) {
         console.log("Could not fetch account balance");
       }
     };
-    // retrieve transactions to be displayed on the home page. we can limit this to the last 10 transactions
-    const getTransactions = async () => {
-      const transactionsArray = await fetchTransactions();
-      setTransactions(transactionsArray);
-    };
-    getTransactions();
 
     getAccountBalance();
   }, []);
-  
+
   console.log("accounts on home are:", accounts);
-  console.log("transactions on home are:", transactions);
+  console.log("transactions on home are:", categories);
 
   const Icon = ({ subtype }: { subtype: string }) => {
     if (subtype === "checking") {
@@ -87,7 +115,6 @@ export const Home = () => {
       <h2 className="text-3xl mt-5 mb-10 font-extrabold tracking-wider text-gray-800">
         Overview
       </h2>
-
       {/* Grid layout for account display */}
       <div
         className={`grid grid-cols-1 md:grid-rows-${accounts.length} gap-y-10 gap-x-6 w-full max-w-3xl`}
@@ -102,61 +129,53 @@ export const Home = () => {
 
             {/* Account Name */}
             <span className="text-xl font-semibold text-gray-800 flex-1 ml-4">
-              {account.name}
+              {account.accountName}
             </span>
 
             {/* Account Balance */}
             <span className="text-xl font-bold text-gray-800">
-              ${account.balances.current.toFixed(2)}
+              ${account.balanceCurrent.toFixed(2) || "0.00"}
             </span>
           </div>
         ))}
       </div>
-
-      {/* Activity layout to display latest transactions */}
-      <h2 className="text-3xl mt-15 mb-10 font-extrabold tracking-wider text-gray-800">
-        Activity
-      </h2>
+      <div className="flex flex-row ">
+        {/* Activity layout to display latest transactions per category */}
+        <h2 className="text-3xl mt-15 mb-10 font-extrabold tracking-wider text-gray-800 ">
+          Activity
+        </h2>
+        {/*datetime picker */}
+        <div className="content-center mt-6 pl-4">
+          <DateRangePickerComponent onDateChange={handleDateChange} />
+        </div>
+      </div>
       <div>
         {/* transactions table:  */}
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 500 }} aria-label="simple table">
             <TableHead>
               <StyledTableRow>
-                <StyledTableCell>Transaction Date</StyledTableCell>
-                <StyledTableCell align="left">Merchant</StyledTableCell>
-                <StyledTableCell align="left">Amount&nbsp;($)</StyledTableCell>
                 <StyledTableCell align="left">Category</StyledTableCell>
+                <StyledTableCell align="left">Amount&nbsp;($)</StyledTableCell>
               </StyledTableRow>
             </TableHead>
             <TableBody>
-              {transactions.map((transaction, index) => (
+              {categories.map((category, index) => (
                 <StyledTableRow
                   key={index}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <StyledTableCell component="th" scope="row">
-                    {transaction.transactionDate}
-                  </StyledTableCell>
-                  {/* if the merchant is null then just show NA */}
-                  {transaction.merchant ? (
-                    <StyledTableCell align="left">
-                      {transaction.merchant}
-                    </StyledTableCell>
-                  ) : (
-                    <StyledTableCell align="left">N/A</StyledTableCell>
-                  )}
                   <StyledTableCell align="left">
-                    {transaction.amount}
+                    {category.totalAmount.toFixed(2)}
                   </StyledTableCell>
                   <StyledTableCell align="left">
                     <div className="flex items-center">
                       <img
-                        src={transaction.categoryIcon}
+                        src={category.categoryIcon}
                         alt="Category icon"
                         className="w-10 mr-2"
                       />
-                      {transaction.category}
+                      {category.category}
                     </div>
                   </StyledTableCell>
                 </StyledTableRow>
@@ -164,7 +183,7 @@ export const Home = () => {
             </TableBody>
           </Table>
         </TableContainer>
-      </div>
+      </div>{" "}
     </Box>
   );
 };
